@@ -1,0 +1,3 @@
+Grandpa´s Clock Scheduler:
+
+This software is a variant from the "Grandpa´s Clock Scheduler" for the MC9S08AC60 microcontroller.

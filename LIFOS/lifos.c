@@ -79,7 +79,7 @@ void LIFOS(S_SCISTR * userSerialPort, T_ULONG br)
 {
 	LIFOS_Serial = userSerialPort;
 	LIFOS_Serial->init(br);
-	LIFOS_Serial->print("\fNew LIFOS Library test - T3");
+	LIFOS_Serial->write("\fNew LIFOS Library test - T3");
 	LIFOS_Serial->onReceive = &LIFOS_eventListener;
 }
 
@@ -99,7 +99,7 @@ void LIFOS(S_SCISTR * userSerialPort, T_ULONG br)
 
 void LIFOS_eventListener(void)
 {
-	LIFOS_rx_pkg[LIFOS_rx_nxt] = LIFOS_Serial->data;			//Save Data T_UBYTE
+	LIFOS_rx_pkg[LIFOS_rx_nxt] = LIFOS_Serial->data;	//Save Data T_UBYTE
 	LIFOS_rx_nxt++;										//Increment Counters						
 		
 	if(LIFOS_rx_nxt >= LIFOS_PKG_SIZE)					//Full Data Package Received
@@ -253,7 +253,7 @@ void LIFOS_pkg_encode(T_UBYTE did, T_UBYTE rsp, T_UBYTE ack, int value_to_send){
 	LIFOS_tx_pkg[7] = LIFOS_tx_pkg_chk;
 	LIFOS_tx_pkg[8] = ASCII_NULL;
 	
-	LIFOS_Serial->print(LIFOS_tx_pkg);	
+	LIFOS_Serial->write(LIFOS_tx_pkg);	
 	
 	LIFOS_busy = FALSE;								//Release Slave	
 	

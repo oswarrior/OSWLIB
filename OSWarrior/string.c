@@ -50,7 +50,16 @@ int str_to_int(T_UBYTE *str)
 		case 3:
 			result = ((int)*str - 48)*100;
 			str++;
-			result = ((int)*str - 48)*10;
+			result += ((int)*str - 48)*10;
+			str++;
+			result += ((int)*str - 48);
+		break;
+		case 4:
+			result = ((int)*str - 48)*1000;
+			str++;
+			result += ((int)*str - 48)*100;
+			str++;
+			result += ((int)*str - 48)*10;
 			str++;
 			result += ((int)*str - 48);
 		break;

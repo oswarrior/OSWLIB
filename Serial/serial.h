@@ -50,8 +50,8 @@
 	*/
 	
 	#include "oswlib/settings.h"
-	#include "oswlib/Serial/serial_COMPort.h"
-	#include "oswlib/Serial/serial_SCIPort.h"
+	#include "oswlib/Serial/SerialPort1.h"
+	#include "oswlib/Serial/SerialPort2.h"
 
 	/*
 	** ===================================================================
@@ -99,18 +99,20 @@
 		void (*clear)(void);
 		void (*newLine)(void);
 		T_UBYTE (*available)(void);
-		
-		void (*print)(T_UBYTE *);
+
+		void (*print)(T_SLONG);
 		void (*println)(T_UBYTE *);
-		void (*printChar)(T_UBYTE);
-		void (*printNum)(T_SLONG);
 		void (*printDigits)(T_SLONG, int);
 		void (*printFloat)(T_FLOAT, int);
-		
-		T_UBYTE * (*read)(void);
+
+		void (*write)(T_UBYTE *);
+		void (*writeChar)(T_UBYTE);
+				
+		T_UBYTE (*read)(void);
+		T_UBYTE *(*readString)(void);
 		T_UBYTE (*getChar)(void);
 		int (*readNumber)(void);
-				
+
 		void (*onReceive)(void);
 	}S_SCISTR;
 	
@@ -123,7 +125,5 @@
 	PUBLIC_DATA S_SCISTR Serial;
 	
 	PUBLIC_DATA S_SCISTR Serial2;
-	
-	PUBLIC_DATA S_SCI_FIFO _OSWarrior_COMPort_Tx_FIFO;
-		
+			
 #endif /* OSWARRIORMINI_SERIAL_H_ */

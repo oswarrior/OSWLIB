@@ -623,21 +623,21 @@
 	
 	/*
 	** ===================================================================
-	** COMPort (SCI Embedded Comport) Configuration Registers
+	** SerialPort1 (SCI Embedded SerialPort1) Configuration Registers
 	** ===================================================================
 	*/
 
-	#define	COMPort_TX 		PTCD_PTCD3		//COMport - Tx Signal
-	#define	SCIPort_TX 		PTCD_PTCD5		//COMport - Rx Signal
+	#define	SerialPort1_TX 		PTCD_PTCD3		//SerialPort1 - Tx Signal
+	#define	SerialPort2_TX 		PTCD_PTCD5		//SerialPort2 - Rx Signal
 
-	#define	COMPort_RX 		PTCD_PTCD5		//COMport - Rx Signal
-	#define	SCIPort_RX 		PTCD_PTCD5		//COMport - Rx Signal
+	#define	SerialPort1_RX 		PTCD_PTCD5		//SerialPort1 - Rx Signal
+	#define	SerialPort2_RX 		PTCD_PTCD5		//SerialPort2 - Rx Signal
 	
-	#define	COMPort_Data	SCI2D
-	#define	SCIPort_Data	SCI1D
+	#define	SerialPort1_Data	SCI2D			//SerialPort1 - Data
+	#define	SerialPort2_Data	SCI1D			//SerialPort2 - Data
 
-	#define	COMPort_TF		SCI2S1_TDRE
-	#define	SCIPort_TF		SCI1S1_TDRE
+	#define	SerialPort1_TF		SCI2S1_TDRE
+	#define	SerialPort2_TF		SCI1S1_TDRE
 
 	/*
 	** ===================================================================
@@ -646,8 +646,8 @@
 	*/
 	
 	#define OSWarrior_KBIPort_ISR_Vector		0xFFD2
-	#define OSWarrior_COMPort_ISR_Vector		0xFFD4
-	#define OSWarrior_SCIPort_ISR_Vector		0xFFDA
+	#define OSWarrior_SerialPort1_ISR_Vector	0xFFD4
+	#define OSWarrior_SerialPort2_ISR_Vector	0xFFDA
 	#define OSWarrior_ISR_I2CPort_Vector		0xFFCE
 
 	#define OSWarrior_ISR_TPM3Ovf_Vector		0xFFC6

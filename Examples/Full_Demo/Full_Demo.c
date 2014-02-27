@@ -32,12 +32,12 @@ void example_Full_Demo_loop(void)
 	*/
 	
 	{
-		Demo_Full_Serial->print("\f\r\n****************************************\r\n"); 
-		Demo_Full_Serial->print("OSWarrior Demo\r\n");
-		Demo_Full_Serial->print("Developed by: OSWarrior Team");
-		Demo_Full_Serial->print("\r\n****************************************\r\n"); 
-		Demo_Full_Serial->print("\r\nCommand List:\r\n");
-		Demo_Full_Serial->print("----------------------\r\n");
+		Demo_Full_Serial->write("\f\r\n****************************************\r\n"); 
+		Demo_Full_Serial->write("OSWarrior Demo\r\n");
+		Demo_Full_Serial->write("Developed by: OSWarrior Team");
+		Demo_Full_Serial->write("\r\n****************************************\r\n"); 
+		Demo_Full_Serial->write("\r\nCommand List:\r\n");
+		Demo_Full_Serial->write("----------------------\r\n");
 	}
 	
 	/*
@@ -49,11 +49,11 @@ void example_Full_Demo_loop(void)
 	{
 		for(i = 0; i < OSWarrior_Demo_Total; i++)
 		{
-			Demo_Full_Serial->print(" ");		
-			Demo_Full_Serial->print((T_UBYTE *)OSWarrior_Demo_List[i].CommandString);		
-			Demo_Full_Serial->print(") ");		
-			Demo_Full_Serial->print((T_UBYTE *)OSWarrior_Demo_List[i].function_name);		
-			Demo_Full_Serial->print("\r\n");		
+			Demo_Full_Serial->write(" ");		
+			Demo_Full_Serial->write((T_UBYTE *)OSWarrior_Demo_List[i].CommandString);		
+			Demo_Full_Serial->write(") ");		
+			Demo_Full_Serial->write((T_UBYTE *)OSWarrior_Demo_List[i].function_name);		
+			Demo_Full_Serial->write("\r\n");		
 		}
 	}
 
@@ -63,8 +63,8 @@ void example_Full_Demo_loop(void)
 	** ===================================================================
 	*/	
 
-	Demo_Full_Serial->print("\r\nSelect function to execute: ");
-	userSel = Demo_Full_Serial->read();	
+	Demo_Full_Serial->write("\r\nSelect function to execute: ");
+	userSel = Demo_Full_Serial->readString();	
 	
 	{
 		CmdFound = FALSE;
@@ -73,8 +73,8 @@ void example_Full_Demo_loop(void)
 		{           
 			if(strcmp(userSel,OSWarrior_Demo_List[i].CommandString) == 0)
 			{
-				Demo_Full_Serial->print("\r\n>> Example Running: ");
-				Demo_Full_Serial->print((T_UBYTE *)OSWarrior_Demo_List[i].function_name);		
+				Demo_Full_Serial->write("\r\n>> Example Running: ");
+				Demo_Full_Serial->write((T_UBYTE *)OSWarrior_Demo_List[i].function_name);		
 				
 				OSWarrior_Demo_List[i].handler();
 				
@@ -85,7 +85,7 @@ void example_Full_Demo_loop(void)
 		
 		if(CmdFound == FALSE)
 		{
-			Demo_Full_Serial->print("\r\n>> Please select a valid command.");
+			Demo_Full_Serial->write("\r\n>> Please select a valid command.");
 		}
 	}
 	

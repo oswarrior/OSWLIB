@@ -44,22 +44,18 @@ void demo_led_blinking(void){
 	const int duration = 10000;			/* Demo duration in milliseconds */	
 
 	pinDirection(inst_user_led_0, OUTPUT);
-	pinDirection(inst_user_led_1, OUTPUT);
 
 	writePin(inst_user_led_0, LOW);
-	writePin(inst_user_led_1, HIGH);
 
 	timeLimit = (int)millis() + duration;
 	
 	while( (int)millis() < timeLimit)
 	{
 		togglePin(inst_user_led_0);
-		togglePin(inst_user_led_1);
 		delay(500);
 	}
 	
 	pinDirection(inst_user_led_0, INPUT);
-	pinDirection(inst_user_led_1, INPUT);
 }
 
 void demo_analog_read(void){
@@ -77,9 +73,9 @@ void demo_analog_read(void){
 	
 	while( (int)millis() < timeLimit)
 	{
-		Demo_Full_Serial->print(">> Analog read: ");
+		Demo_Full_Serial->write(">> Analog read: ");
 		Demo_Full_Serial->printDigits(Analog.read(inst_potenciometer),4);
-		Demo_Full_Serial->printChar(ASCII_CR);
+		Demo_Full_Serial->writeChar(ASCII_CR);
 		delay(10);
 	}
 	
@@ -261,24 +257,24 @@ void demo_i2c_wii_nunchuck(void)
 		
 		WiiNunchuck.update();
 		
-		Demo_Full_Serial->print(">> C:");
-		Demo_Full_Serial->printNum(WiiNunchuck.buttonC);
+		Demo_Full_Serial->write(">> C:");
+		Demo_Full_Serial->print(WiiNunchuck.buttonC);
 		writePin(inst_user_led_0,WiiNunchuck.buttonC);
 			
-		Demo_Full_Serial->print(", Z:");
-		Demo_Full_Serial->printNum(WiiNunchuck.zPressed());
+		Demo_Full_Serial->write(", Z:");
+		Demo_Full_Serial->print(WiiNunchuck.zPressed());
 		
-		Demo_Full_Serial->print(" - JoyX:");
-		Demo_Full_Serial->printNum(WiiNunchuck.joyX());
-		Demo_Full_Serial->print(" JoyY:");
-		Demo_Full_Serial->printNum(WiiNunchuck.joyY());
+		Demo_Full_Serial->write(" - JoyX:");
+		Demo_Full_Serial->print(WiiNunchuck.joyX());
+		Demo_Full_Serial->write(" JoyY:");
+		Demo_Full_Serial->print(WiiNunchuck.joyY());
 		
-		Demo_Full_Serial->print(" - AccX:");
-		Demo_Full_Serial->printNum(WiiNunchuck.readAccelX());
-		Demo_Full_Serial->print("	AccY:");
-		Demo_Full_Serial->printNum(WiiNunchuck.readAccelY());
-		Demo_Full_Serial->print("	AccZ:");
-		Demo_Full_Serial->printNum(WiiNunchuck.readAccelZ());
+		Demo_Full_Serial->write(" - AccX:");
+		Demo_Full_Serial->print(WiiNunchuck.readAccelX());
+		Demo_Full_Serial->write("	AccY:");
+		Demo_Full_Serial->print(WiiNunchuck.readAccelY());
+		Demo_Full_Serial->write("	AccZ:");
+		Demo_Full_Serial->print(WiiNunchuck.readAccelZ());
 		
 		Demo_Full_Serial->newLine();
 	}
@@ -456,8 +452,8 @@ void demo_dummy_car(void)
 	T_UBYTE data;			//Save Data byte
 	
 	data = SCI1D;	
-	Demo_Full_Serial->print("Char: ");
-	Demo_Full_Serial->printChar(data);
+	Demo_Full_Serial->write("Char: ");
+	Demo_Full_Serial->writeChar(data);
 	
 	switch(data){
 		case(0x65):
@@ -533,36 +529,36 @@ void demo_Scheduler_Task_4(void)
 void demo_Scheduler_Task_Millis(void)
 {
 	static T_ULONG time = 0;
-	Demo_Full_Serial->print("\r\n>> T(ms): ");
-	Demo_Full_Serial->printNum(millis());
+	Demo_Full_Serial->write("\r\n>> T(ms): ");
+	Demo_Full_Serial->print(millis());
 	if(millis() > 100000) Scheduler.end();
 }
 
 void demo_Scheduler_Task_Count_100ms(void)
 {
 	static T_ULONG time = 0;
-	Demo_Full_Serial->print(">> T(ms): ");
-	Demo_Full_Serial->printNum(time+=100);
-	Demo_Full_Serial->printChar(ASCII_CR);
+	Demo_Full_Serial->write(">> T(ms): ");
+	Demo_Full_Serial->print(time+=100);
+	Demo_Full_Serial->writeChar(ASCII_CR);
 }
 
 void demo_Scheduler_Task_Count_1s(void)
 {
 	static T_ULONG time = 1;
-	Demo_Full_Serial->print("\r\n>> T(s): ");
-	Demo_Full_Serial->printNum(time++);
+	Demo_Full_Serial->write("\r\n>> T(s): ");
+	Demo_Full_Serial->print(time++);
 }
 
 void demo_Scheduler_Task_Count_1m(void)
 {
 	static T_ULONG time = 1;
-	Demo_Full_Serial->print("\r\n\t>> T(m): ");
-	Demo_Full_Serial->printNum(time++);
+	Demo_Full_Serial->write("\r\n\t>> T(m): ");
+	Demo_Full_Serial->print(time++);
 }
 
 void demo_Scheduler_Task_Count_1h(void)
 {
 	static T_ULONG time = 1;
-	Demo_Full_Serial->print("\r\n\t\t>> T(h): ");
-	Demo_Full_Serial->printNum(time++);
+	Demo_Full_Serial->write("\r\n\t\t>> T(h): ");
+	Demo_Full_Serial->print(time++);
 }

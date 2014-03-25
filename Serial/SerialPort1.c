@@ -606,6 +606,10 @@ __interrupt void _OSWarrior_SerialPort1_ISR_Read(void)
 		{
 			_OSWarrior_SerialPort1_available++;										//Increment available values
 			
+			Serial.data = SCI2D;
+			
+			Serial.onReceive();
+			
 			_OSWarrior_SerialPort1_Rx_Buff[_OSWarrior_SerialPort1_Rx_nxt] = SCI2D;		//Save the data
 			_OSWarrior_SerialPort1_Rx_nxt++;										//Increment index
 			

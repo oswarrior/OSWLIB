@@ -25,5 +25,7 @@
 	PUBLIC_FCT T_UBYTE strlength_ptr(T_UBYTE *str);
 	PUBLIC_FCT T_UBYTE strsub(T_UBYTE  string[],T_UBYTE  sub_min,T_UBYTE  sub_max);
 	PUBLIC_FCT int str_to_int(T_UBYTE *str);
+	T_UBYTE * dec_to_hexString(unsigned int dec);
+
 	
 #endif

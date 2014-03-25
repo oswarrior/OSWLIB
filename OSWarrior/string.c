@@ -19,6 +19,8 @@
 #include "oswlib/settings.h"
 #include "oswlib/OSWarrior/string.h"
 
+PRIVATE_DATA const T_UBYTE hex_digits[] =  {"0123456789ABCDEF"};
+
 T_UBYTE strlength_ptr(T_UBYTE *str)
 {
 	T_UBYTE length = 0;
@@ -65,4 +67,27 @@ int str_to_int(T_UBYTE *str)
 		break;
 	}	
 	return result;
+}
+
+T_UBYTE * dec_to_hexString(unsigned int dec)
+{
+	T_UBYTE * hex_base = "0x";
+	
+	char hex_temp[2];
+	char hex[80];
+	
+	unsigned int residuo;
+	unsigned int cociente;	
+	
+	(void) strcpy(hex, hex_base );
+
+	cociente = (unsigned int)dec/16;
+	hex_temp[0] = hex_digits[cociente];		
+	
+	residuo = (unsigned int)dec%16;
+	hex_temp[1] = hex_digits[residuo];		
+	
+	(void) strcat(hex,hex_temp);	
+	
+	return hex;
 }

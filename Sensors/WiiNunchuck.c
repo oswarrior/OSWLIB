@@ -64,11 +64,11 @@ void _i2c_wiinunchuck_init(void){
 	I2C.enable(I2C.address);
 	_i2c_wiinunchuck_byteCounter = 0;
 	_i2c_wiinunchuck_avgCounter = 0;
-	I2C.start(0x52);
-	I2C.send(0xF0);
-	I2C.send(0x55);
+	I2C.start(0x52);	//OK
+	I2C.send(0xF0);		//OK
+	I2C.send(0x55);		//OK
 	I2C.end();
-	delay(5);
+	delay(10);
 	//Serial.getChar();
 	I2C.start(0x52);
 	I2C.send(0xFB);
@@ -83,7 +83,6 @@ void _i2c_wiinunchuck_init(void){
 	_i2c_wiinunchuck_zeroJoyY = _I2C_WIINUNCHUCK_DEFAULT_ZERO_JOY_Y;
 
 	_i2c_wiinunchuck_update();
-
 }
 
 void _i2c_wiinunchuck_update(void){

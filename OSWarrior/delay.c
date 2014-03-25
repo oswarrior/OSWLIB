@@ -57,10 +57,10 @@ void oswarrior_disableDelays(void)
 ** ===================================================================
 */
 
-void delay(int ms)
+void delay(unsigned int ms)
 {
 	T_ULONG start_time = millis();
-	while( (millis() - start_time ) < ms );
+	while( ( millis() - start_time ) < ms );
 };
 
 /*

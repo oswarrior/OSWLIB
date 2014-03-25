@@ -28,7 +28,7 @@
 	
 	PUBLIC_FCT void oswarrior_enableDelays(void);
 	PUBLIC_FCT void oswarrior_disableDelays(void);
-	PUBLIC_FCT void delay(int ms);
+	PUBLIC_FCT void delay(unsigned int ms);
 	PUBLIC_FCT T_ULONG millis(void);
 
 	PUBLIC_DATA void ( * _OSWarrior_tickISR_handler )(void);

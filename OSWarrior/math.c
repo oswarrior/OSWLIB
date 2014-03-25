@@ -161,7 +161,7 @@ void number_explode(T_SLONG number, void (*handler)(T_UBYTE), int num_digits)
 }
 
 void number_explode_FloatNumbers(T_FLOAT Floatnumber, void (*handler)(T_UBYTE), int num_decimals)
-{	
+{
 	T_SLONG number, aux_number, dec_base = 1;
 	int i, count = 0;
 	if(Floatnumber < 0)
@@ -179,7 +179,7 @@ void number_explode_FloatNumbers(T_FLOAT Floatnumber, void (*handler)(T_UBYTE), 
 		Floatnumber = Floatnumber - number;
 		for(i = 0; i < num_decimals; i++)	Floatnumber *= 10;
 		number = (T_SLONG)Floatnumber;
-		dispatch_exploded_number(number, handler, num_decimals - 1, 0 );
+		dispatch_exploded_number(number, handler, num_decimals - 1, num_decimals );
 	}
 }
 

@@ -92,7 +92,7 @@ S_LCDSTR LCD = {
 ** ===================================================================
 */
 
-void _OSWarrior_lcd_init(T_UBYTE cols, T_UBYTE rows, T_UBYTE RS, T_UBYTE EN, T_UBYTE d4, T_UBYTE d5, T_UBYTE d6, T_UBYTE d7){
+void _OSWarrior_lcd_init(T_UBYTE rows, T_UBYTE cols, T_UBYTE RS, T_UBYTE EN, T_UBYTE d4, T_UBYTE d5, T_UBYTE d6, T_UBYTE d7){
 
 	LCD.rows = rows;
 	LCD.cols = cols;
@@ -155,10 +155,13 @@ void _OSWarrior_lcd_push_enable(void)
 	
 void _OSWarrior_lcd_reset(void)
 {
+	writeNibble( 0x0F , LCD.d7, LCD.d6, LCD.d5, LCD.d4 );
 	writePin(LCD.en, 1);
 	writePin(LCD.rs, 1);
-	writeNibble( 0x0F , LCD.d7, LCD.d6, LCD.d5, LCD.d4 );
 	delay(20);
+	
+	
+	writePin(LCD.rs, 0);
 	
 	writeNibble( 0x03 , LCD.d7, LCD.d6, LCD.d5, LCD.d4 );
 	_OSWarrior_lcd_push_enable();
@@ -175,6 +178,8 @@ void _OSWarrior_lcd_reset(void)
 	writeNibble( 0x02 , LCD.d7, LCD.d6, LCD.d5, LCD.d4 );
 	_OSWarrior_lcd_push_enable();
 	delay(1);
+	
+	
 }
 
 /*
@@ -195,10 +200,13 @@ void _OSWarrior_lcd_reset(void)
 void _OSWarrior_lcd_cmd (T_UBYTE cmd)
 {
 	writePin(LCD.rs, 0);
+	
 	writeNibble( ((cmd >> 4) & NIBBLE_MASK ) , LCD.d7, LCD.d6, LCD.d5, LCD.d4 );
 	_OSWarrior_lcd_push_enable();
+	
 	writeNibble( (cmd & NIBBLE_MASK) , LCD.d7, LCD.d6, LCD.d5, LCD.d4 );
 	_OSWarrior_lcd_push_enable();
+		
 	delay(1);
 }	
 

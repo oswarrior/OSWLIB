@@ -82,7 +82,7 @@
 		T_UBYTE	rows; 	
 		T_UBYTE cols;	
 	
-		void (*init)(T_UBYTE cols, T_UBYTE rows, T_UBYTE rs, T_UBYTE en, T_UBYTE d4, T_UBYTE d5, T_UBYTE d6, T_UBYTE d7);		
+		void (*init)(T_UBYTE rows, T_UBYTE cols, T_UBYTE rs, T_UBYTE en, T_UBYTE d4, T_UBYTE d5, T_UBYTE d6, T_UBYTE d7);		
 		void (*reset)(void);
 		void (*clear)(void);
 

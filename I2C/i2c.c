@@ -68,6 +68,7 @@ PRIVATE_DATA T_UBYTE 		_OSWarrior_i2c_read_buffer[16];
 		 640,  768,  896, 1024, 1152, 1280, 1536, 1920, 1280, 1536, 1792, 2048, 2304, 2560, 3072, 3840
 	};	
 #endif
+	
 /*
 ** ===================================================================
 ** I2C Structure definition
@@ -76,7 +77,7 @@ PRIVATE_DATA T_UBYTE 		_OSWarrior_i2c_read_buffer[16];
 
 S_I2CSTR I2C = {
 	0x1F, 
-	50000,
+	100000,
 	_OSWarrior_i2c_enable,
 	_OSWarrior_i2c_start,
 	_OSWarrior_i2c_send,
@@ -107,11 +108,13 @@ void _OSWarrior_i2c_enable(T_UBYTE address)
 {
 	#ifdef __OSWarrior_DK__
 	{
-		T_UBYTE Freq;
+		static T_UBYTE Freq;
 		I2C_EN = I2C_ENABLED;		// Enable I2C
 		I2C.address = address;		// IIC Address to structure
 		I2C_ADD = address;			// IIC Address
-		Freq = 	_OSWarrior_i2c_baud_calc(I2C.baudRate);	
+		Freq = _OSWarrior_i2c_baud_calc(I2C.baudRate);	
+		//I2C_FREQ = 0x4C;	
+		I2C_FREQ = Freq;	
 		_OSWarrior_i2c_ctrl_step = READY;
 		I2C_IE = I2C_IE_EN;			// Enable IIC interrupts    
 	}
@@ -222,6 +225,7 @@ void _OSWarrior_i2c_start (T_UBYTE slv_adr)
 {
 	_OSWarrior_i2c_write_index = 0;
 	_OSWarrior_i2c_write_buffer[_OSWarrior_i2c_write_index] = slv_adr;
+	_OSWarrior_i2c_write_index++;
 }
 	
 /*
@@ -243,8 +247,8 @@ void _OSWarrior_i2c_start (T_UBYTE slv_adr)
 
 void _OSWarrior_i2c_send (T_UBYTE data)
 {
-	_OSWarrior_i2c_write_index++;
 	_OSWarrior_i2c_write_buffer[_OSWarrior_i2c_write_index] = data;
+	_OSWarrior_i2c_write_index++;
 }
 				
 /*
@@ -266,7 +270,7 @@ void _OSWarrior_i2c_send (T_UBYTE data)
 void _OSWarrior_i2c_end(void)
 {
 	T_UBYTE Temp;
-	_OSWarrior_i2c_ctrl_dataLength = _OSWarrior_i2c_write_index + 1;
+	_OSWarrior_i2c_ctrl_dataLength = _OSWarrior_i2c_write_index - 1;
 	_OSWarrior_i2c_write_index = 0;
 	_OSWarrior_i2c_ctrl_step = HEADER_SENT;
 	_OSWarrior_i2c_ctrl_direction = TRANSMIT;

@@ -78,7 +78,7 @@ S_SCISTR * LIFOS_Serial;
 void LIFOS(S_SCISTR * userSerialPort, T_ULONG br)
 {
 	LIFOS_Serial = userSerialPort;
-	LIFOS_Serial->init(br);
+	LIFOS_Serial->begin(br);
 	LIFOS_Serial->write("\fNew LIFOS Library test - T3");
 	LIFOS_Serial->onReceive = &LIFOS_eventListener;
 }

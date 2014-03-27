@@ -11,14 +11,15 @@ int lifos_printCMDList(T_UBYTE Channel, int Value)
 	/* Insert print code here */
 	for(i=0; i < LIFOS_CMD_LIST_LEN; i++)
 	{     
-		LIFOS_Serial->println((T_UBYTE *)LIFOS_CMD_LIST[i].CMD_NAME);
+		LIFOS_Serial->write((T_UBYTE *)LIFOS_CMD_LIST[i].CMD_NAME);
+		LIFOS_Serial->write("\r\n");
 	}
 	return 0;
 }
 
 int lifos_pinDirection(T_UBYTE Channel, int Value)
 {
-	pinDirection(Channel, Value);
+	pinMode(Channel, Value);
 	return 0;
 }
 int lifos_pinRead(T_UBYTE Channel, int Value)
@@ -28,7 +29,7 @@ int lifos_pinRead(T_UBYTE Channel, int Value)
 }
 int lifos_pinWrite(T_UBYTE Channel, int Value)
 {
-	writePin(Channel, Value);
+	digitalWrite(Channel, Value);
 	return 0;	
 }
 int lifos_pinToggle(T_UBYTE Channel, int Value)

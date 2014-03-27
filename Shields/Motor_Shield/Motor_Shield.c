@@ -49,8 +49,8 @@ MOTORSSTR Motors = {
 void _motor_shield_enable(E_DIRECTION motor_side){
 	if(motor_side == LEFT){
 		
-		pinDirection(MOTOR_SHIELD_DIR_A, OUTPUT);
-		pinDirection(MOTOR_SHIELD_BRAKE_A, OUTPUT);
+		pinMode(MOTOR_SHIELD_DIR_A, OUTPUT);
+		pinMode(MOTOR_SHIELD_BRAKE_A, OUTPUT);
 		
 		PWM.enable(MOTOR_SHIELD_PWM_A);
 		PWM.dutyCycle(MOTOR_SHIELD_PWM_A, 100);
@@ -59,8 +59,8 @@ void _motor_shield_enable(E_DIRECTION motor_side){
 		
 	}else if(motor_side == RIGHT){
 		
-		pinDirection(MOTOR_SHIELD_DIR_B, OUTPUT);
-		pinDirection(MOTOR_SHIELD_BRAKE_B, OUTPUT);
+		pinMode(MOTOR_SHIELD_DIR_B, OUTPUT);
+		pinMode(MOTOR_SHIELD_BRAKE_B, OUTPUT);
 		
 		PWM.enable(MOTOR_SHIELD_PWM_B);
 		PWM.dutyCycle(MOTOR_SHIELD_PWM_B, 100);
@@ -73,15 +73,15 @@ void _motor_shield_enable(E_DIRECTION motor_side){
 void _motor_shield_disable(E_DIRECTION motor_side){
 	if(motor_side == LEFT){
 		
-		pinDirection(MOTOR_SHIELD_DIR_A, INPUT);
-		pinDirection(MOTOR_SHIELD_BRAKE_A, INPUT);
+		pinMode(MOTOR_SHIELD_DIR_A, INPUT);
+		pinMode(MOTOR_SHIELD_BRAKE_A, INPUT);
 		
 		PWM.disable(MOTOR_SHIELD_PWM_A);
 				
 	}else if(motor_side == RIGHT){
 		
-		pinDirection(MOTOR_SHIELD_DIR_B, INPUT);
-		pinDirection(MOTOR_SHIELD_BRAKE_B, INPUT);
+		pinMode(MOTOR_SHIELD_DIR_B, INPUT);
+		pinMode(MOTOR_SHIELD_BRAKE_B, INPUT);
 		
 		PWM.disable(MOTOR_SHIELD_PWM_B);
 		
@@ -90,27 +90,27 @@ void _motor_shield_disable(E_DIRECTION motor_side){
 
 void _motor_shield_run(E_DIRECTION motor_side, E_DIRECTION motor_direction){
 	if(motor_side == LEFT){
-		writePin(MOTOR_SHIELD_BRAKE_A, OFF);
+		digitalWrite(MOTOR_SHIELD_BRAKE_A, OFF);
 		if(motor_direction == FORWARD){
-				writePin(MOTOR_SHIELD_DIR_A, ON);
+			digitalWrite(MOTOR_SHIELD_DIR_A, ON);
 		}else if(motor_direction == BACKWARD){
-				writePin(MOTOR_SHIELD_DIR_A, OFF);		
+			digitalWrite(MOTOR_SHIELD_DIR_A, OFF);		
 		}
 	}else if(motor_side == RIGHT){
-		writePin(MOTOR_SHIELD_BRAKE_B, OFF);	
+		digitalWrite(MOTOR_SHIELD_BRAKE_B, OFF);	
 		if(motor_direction == FORWARD){
-				writePin(MOTOR_SHIELD_DIR_B, ON);
+			digitalWrite(MOTOR_SHIELD_DIR_B, ON);
 		}else if(motor_direction == BACKWARD){
-				writePin(MOTOR_SHIELD_DIR_B, OFF);		
+			digitalWrite(MOTOR_SHIELD_DIR_B, OFF);		
 		}
 	}	
 }
 
 void _motor_shield_stop(E_DIRECTION motor_side){
 	if(motor_side == LEFT){
-		writePin(MOTOR_SHIELD_BRAKE_A, ON);
+		digitalWrite(MOTOR_SHIELD_BRAKE_A, ON);
 	}else if(motor_side == RIGHT){
-		writePin(MOTOR_SHIELD_BRAKE_B, ON);	
+		digitalWrite(MOTOR_SHIELD_BRAKE_B, ON);	
 	}	
 }
 

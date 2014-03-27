@@ -55,7 +55,7 @@
 ** ===================================================================
 */
 
-void pinDirection(int pin, int direction)
+void pinMode(int pin, int direction)
 {		
 	
 	if(direction > 2) direction = INPUT;
@@ -218,7 +218,7 @@ void pinDirection(int pin, int direction)
 ** ===================================================================
 */
 	
-void writePin(int pin, int value)
+void digitalWrite(int pin, int value)
 {
 	if(value > 1) value = 1;
 	switch(pin)
@@ -714,9 +714,9 @@ int readPin(int pin)
 void writeNibble( T_UBYTE data, T_UBYTE bit3, T_UBYTE bit2, T_UBYTE bit1, T_UBYTE bit0 )
 {
 		
-	writePin( bit0, ( data & BIT_MASK ) );
-	writePin( bit1, ( ( data>>1 ) & BIT_MASK ) );
-	writePin( bit2, ( ( data>>2 ) & BIT_MASK ) );
-	writePin( bit3, ( ( data>>3 ) & BIT_MASK ) );
+	digitalWrite( bit0, ( data & BIT_MASK ) );
+	digitalWrite( bit1, ( ( data>>1 ) & BIT_MASK ) );
+	digitalWrite( bit2, ( ( data>>2 ) & BIT_MASK ) );
+	digitalWrite( bit3, ( ( data>>3 ) & BIT_MASK ) );
 
 };

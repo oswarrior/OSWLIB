@@ -94,20 +94,29 @@
 
 	typedef struct{
 		T_UBYTE data;
-		void (*init)(T_ULONG br);
+		
+		/* Control and Settings functions */
+		
+		void (*begin)(T_ULONG br);			
 		void (*end)(void);
 		void (*clear)(void);
-		void (*newLine)(void);
 		T_UBYTE (*available)(void);
 
+		/* Send numeric data trough the serial port */
+		
 		void (*print)(T_SLONG);
-		void (*println)(T_UBYTE *);
+		void (*println)(T_SLONG);
 		void (*printDigits)(T_SLONG, int);
 		void (*printFloat)(T_FLOAT, int);
 
+		/* Send string and char data trough the serial port */
+		
 		void (*write)(T_UBYTE *);
 		void (*writeChar)(T_UBYTE);
 				
+		/* Read data trough the serial port */
+		
+		T_UBYTE (*peek)(void);
 		T_UBYTE (*read)(void);
 		T_UBYTE *(*readString)(void);
 		T_UBYTE (*getChar)(void);

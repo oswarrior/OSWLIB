@@ -30,8 +30,8 @@
 */
 
 #include "oswlib/settings.h"
-#include "oswlib/serial/serial.h"
-#include "oswlib/serial/serialPort1.h"
+#include "oswlib/Serial/serial.h"
+#include "oswlib/Serial/serialPort1.h"
 
 /*
 ** ===================================================================
@@ -76,10 +76,10 @@ volatile T_BOOLEAN _OSWarrior_SerialPort1_Tx_active = FALSE;
 
 S_SCISTR Serial = {
 	0x00,
+	
 	_OSWarrior_SerialPort1_Init,
 	_OSWarrior_SerialPort1_End,
 	_OSWarrior_SerialPort1_Clear,
-	_OSWarrior_SerialPort1_NewLine,
 	_OSWarrior_SerialPort1_Available,
 	
 	_OSWarrior_SerialPort1_Print,
@@ -90,6 +90,7 @@ S_SCISTR Serial = {
 	_OSWarrior_SerialPort1_Write,
 	_OSWarrior_SerialPort1_WriteChar,
 	
+	_OSWarrior_SerialPort1_Peek,
 	_OSWarrior_SerialPort1_Read,
 	_OSWarrior_SerialPort1_Read_String,
 	_OSWarrior_SerialPort1_GetChar,
@@ -197,26 +198,6 @@ void _OSWarrior_SerialPort1_Clear(void)
 
 /*
 ** ===================================================================
-**     Function : Serial.newLine
-**     Handler  : _OSWarrior_SerialPort1_NewLine
-**
-**     Description :
-**         	Commands the onBoard COM Port to display a new blank line,
-**        	also called as "jump" a line. 
-**     
-**     Parameters  : Nothing
-**     Returns     : Nothing
-** ===================================================================
-*/
-
-void _OSWarrior_SerialPort1_NewLine(void)
-{
-	Serial.writeChar(ASCII_LF);				//LF - Line Feed
-	Serial.writeChar(ASCII_CR);				//CR - Carriage return	
-}
-
-/*
-** ===================================================================
 **     Function : Serial.available
 **     Handler  : _OSWarrior_SerialPort1_Available
 **
@@ -237,28 +218,6 @@ T_UBYTE _OSWarrior_SerialPort1_Available(void)
 	}
 	#endif
 }
-
-/*
-** ===================================================================
-**     Function : Serial.println
-**     Handler  : _OSWarrior_SerialPort1_Print_Line
-**
-**     Description :
-**         This function send a char array variable trough the onBoard
-**         COM Port then prints a new line.
-**     
-**     Parameters  : 
-**         data : char array to be printed
-**     
-**     Returns     : Nothing
-** ===================================================================
-*/
-
-void _OSWarrior_SerialPort1_Print_Line(T_UBYTE *data)
-{
-	Serial.write(data);
-	Serial.write("\r\n");
-};
 
 /*
 ** ===================================================================
@@ -283,6 +242,29 @@ void _OSWarrior_SerialPort1_Print (T_SLONG number)
 {
 	number_explode( number, _OSWarrior_SerialPort1_WriteChar, 0);
 }
+
+/*
+** ===================================================================
+**     Function : Serial.println
+**     Handler  : _OSWarrior_SerialPort1_Print_Line
+**
+**     Description :
+**         This function send a char array variable trough the onBoard
+**         COM Port then prints a new line.
+**     
+**     Parameters  : 
+**         data : char array to be printed
+**     
+**     Returns     : Nothing
+** ===================================================================
+*/
+
+void _OSWarrior_SerialPort1_Print_Line(T_SLONG number)
+{
+	number_explode( number, _OSWarrior_SerialPort1_WriteChar, 0);
+	_OSWarrior_SerialPort1_WriteChar(ASCII_CR);				//CR - Carriage return	
+	_OSWarrior_SerialPort1_WriteChar(ASCII_LF);				//LF - Line Feed
+};
 
 /*
 ** ===================================================================
@@ -345,6 +327,16 @@ void _OSWarrior_SerialPort1_PrintFloatNumber(T_FLOAT number, int decimals)
 **     Returns     : Data read (Returns a pointer type variable)
 ** ===================================================================
 */
+T_UBYTE _OSWarrior_SerialPort1_Peek(void)
+{
+	register T_UBYTE read_data = 0x00;
+
+	if( _OSWarrior_SerialPort1_available >= 1 )									//Buffer data available
+	{
+		read_data = _OSWarrior_SerialPort1_Rx_Buff[_OSWarrior_SerialPort1_Rx_rd];	//Read the data
+	}
+	return read_data;
+}
 
 T_UBYTE _OSWarrior_SerialPort1_Read(void)
 {

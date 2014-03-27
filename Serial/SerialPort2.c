@@ -3,7 +3,7 @@
 ** =============================================================================
 **                       	OBJECT SPECIFICATION                                
 ** =============================================================================
-**  Filename: 	 Serial2.c
+**  Filename: 	 serial.c
 **  Description: OSWarrior Serial library functions definitions
 ** =============================================================================
 **  Author:		 Hugo Arganda (hugo.arganda@gmail.com)
@@ -30,8 +30,8 @@
 */
 
 #include "oswlib/settings.h"
-#include "oswlib/serial/serial.h"
-#include "oswlib/serial/serialPort2.h"
+#include "oswlib/Serial/serial.h"
+#include "oswlib/Serial/SerialPort2.h"
 
 /*
 ** ===================================================================
@@ -40,9 +40,9 @@
 */
 
 static void (* near const _vect_SerialPort2[])(void) @OSWarrior_SerialPort2_ISR_Vector = {
-	_OSWarrior_SerialPort2_ISR_Write,            	/* Int.no. 21 Vsci2tx (at FFD4) */
-	_OSWarrior_SerialPort2_ISR_Read,             	/* Int.no. 20 Vsci2rx (at FFD6) */
-	_OSWarrior_SerialPort2_ISR_Error,				/* Int.no. 19 Vsci2er (at FFD8) */
+	_OSWarrior_SerialPort2_ISR_Write,            	/* Int.no. 21 VSCI1tx (at FFD4) */
+	_OSWarrior_SerialPort2_ISR_Read,             	/* Int.no. 20 VSCI1rx (at FFD6) */
+	_OSWarrior_SerialPort2_ISR_Error,				/* Int.no. 19 VSCI1er (at FFD8) */
 };
 
 /*
@@ -79,7 +79,6 @@ S_SCISTR Serial2 = {
 	_OSWarrior_SerialPort2_Init,
 	_OSWarrior_SerialPort2_End,
 	_OSWarrior_SerialPort2_Clear,
-	_OSWarrior_SerialPort2_NewLine,
 	_OSWarrior_SerialPort2_Available,
 	
 	_OSWarrior_SerialPort2_Print,
@@ -90,6 +89,7 @@ S_SCISTR Serial2 = {
 	_OSWarrior_SerialPort2_Write,
 	_OSWarrior_SerialPort2_WriteChar,
 	
+	_OSWarrior_SerialPort2_Peek,
 	_OSWarrior_SerialPort2_Read,
 	_OSWarrior_SerialPort2_Read_String,
 	_OSWarrior_SerialPort2_GetChar,
@@ -100,7 +100,7 @@ S_SCISTR Serial2 = {
 
 /*
 ** ===================================================================
-**     Function : Serial2.init
+**     Function : Serial.init
 **     Handler  : _OSWarrior_SerialPort2_Init
 **
 **     Description :
@@ -118,12 +118,12 @@ void _OSWarrior_SerialPort2_Init(T_ULONG baudrate)
 {	
 	#ifdef __OSWarrior_DK__
 	{	
-		SCI2C2 = 0x00U;                      // Disable the SCI2 module
-		(void)(SCI2S1 == 0U);                // Dummy read of the SCI2S1 register to clear flags
-		(void)(SCI2D == 0U);                 // Dummy read of the SCI2D register to clear flags 
-		SCI2S2 = 0xC0U;   		
-		SCI2C1 = 0x00U;                                      
-		SCI2C3 = 0x00U; 
+		SCI1C2 = 0x00U;                      // Disable the SCI1 module
+		(void)(SCI1S1 == 0U);                // Dummy read of the SCI1S1 register to clear flags
+		(void)(SCI1D == 0U);                 // Dummy read of the SCI1D register to clear flags 
+		SCI1S2 = 0xC0U;   		
+		SCI1C1 = 0x00U;                                      
+		SCI1C3 = 0x00U; 
 	}
 	#endif	
 	
@@ -139,7 +139,7 @@ void _OSWarrior_SerialPort2_Init(T_ULONG baudrate)
 ** ==============================================================
 ** 	SCI Baud Rate Divider (SCIxBD) calculation:
 ** 		SERIAL_BAUD_RATE = (BUSFREQ / (16 * SCIxBD));
-** 		SERIAL_BAUD_RATE * 16 * SCI2BD = BUSFREQ ;  
+** 		SERIAL_BAUD_RATE * 16 * SCI1BD = BUSFREQ ;  
 ** 		SCIxBD = BUSFREQ / (16 * SERIAL_BAUD_RATE);    
 ** 	Example:                                  
 ** 		SCIxBD = 4MHz / (16 * 9600);         
@@ -150,13 +150,13 @@ void _OSWarrior_SerialPort2_Init(T_ULONG baudrate)
 void _OSWarrior_SerialPort2_setBaudRate(T_ULONG baudrate)
 {
 	#ifdef __OSWarrior_DK__
-		SCI2BD = (unsigned int)(BUSCLOCK / (16 * baudrate));
+		SCI1BD = (unsigned int)(BUSCLOCK / (16 * baudrate));
 	#endif	
 }
 
 /*
 ** ===================================================================
-**     Function : Serial2.end
+**     Function : Serial.end
 **     Handler  : _OSWarrior_SerialPort2_End
 **
 **     Description :
@@ -171,14 +171,14 @@ void _OSWarrior_SerialPort2_End(void)
 {
 	#ifdef __OSWarrior_DK__
 	{	
-		SCI2C2 = 0x00U;                      // Disable the SCI2 module
+		SCI1C2 = 0x00U;                      // Disable the SCI1 module
 	}
 	#endif
 }
 
 /*
 ** ===================================================================
-**     Function : Serial2.clear
+**     Function : Serial.clear
 **     Handler  : _OSWarrior_SerialPort2_Clear
 **
 **     Description :
@@ -192,32 +192,12 @@ void _OSWarrior_SerialPort2_End(void)
 
 void _OSWarrior_SerialPort2_Clear(void)
 {
-	Serial2.writeChar(ASCII_NP);				//FF - Form Feed or NP - New Page
+	Serial.writeChar(ASCII_NP);				//FF - Form Feed or NP - New Page
 }
 
 /*
 ** ===================================================================
-**     Function : Serial2.newLine
-**     Handler  : _OSWarrior_SerialPort2_NewLine
-**
-**     Description :
-**         	Commands the onBoard COM Port to display a new blank line,
-**        	also called as "jump" a line. 
-**     
-**     Parameters  : Nothing
-**     Returns     : Nothing
-** ===================================================================
-*/
-
-void _OSWarrior_SerialPort2_NewLine(void)
-{
-	Serial2.writeChar(ASCII_LF);				//LF - Line Feed
-	Serial2.writeChar(ASCII_CR);				//CR - Carriage return	
-}
-
-/*
-** ===================================================================
-**     Function : Serial2.available
+**     Function : Serial.available
 **     Handler  : _OSWarrior_SerialPort2_Available
 **
 **     Description :
@@ -240,29 +220,7 @@ T_UBYTE _OSWarrior_SerialPort2_Available(void)
 
 /*
 ** ===================================================================
-**     Function : Serial2.println
-**     Handler  : _OSWarrior_SerialPort2_Print_Line
-**
-**     Description :
-**         This function send a char array variable trough the onBoard
-**         COM Port then prints a new line.
-**     
-**     Parameters  : 
-**         data : char array to be printed
-**     
-**     Returns     : Nothing
-** ===================================================================
-*/
-
-void _OSWarrior_SerialPort2_Print_Line(T_UBYTE *data)
-{
-	Serial2.write(data);
-	Serial2.write("\r\n");
-};
-
-/*
-** ===================================================================
-**     Function : Serial2.printNum
+**     Function : Serial.printNum
 **     Handler  : _OSWarrior_SerialPort2_PrintNum
 **
 **     Description :
@@ -286,7 +244,30 @@ void _OSWarrior_SerialPort2_Print (T_SLONG number)
 
 /*
 ** ===================================================================
-**     Function : Serial2.printDigits
+**     Function : Serial.println
+**     Handler  : _OSWarrior_SerialPort2_Print_Line
+**
+**     Description :
+**         This function send a char array variable trough the onBoard
+**         COM Port then prints a new line.
+**     
+**     Parameters  : 
+**         data : char array to be printed
+**     
+**     Returns     : Nothing
+** ===================================================================
+*/
+
+void _OSWarrior_SerialPort2_Print_Line(T_SLONG number)
+{
+	number_explode( number, _OSWarrior_SerialPort2_WriteChar, 0);
+	_OSWarrior_SerialPort2_WriteChar(ASCII_CR);				//CR - Carriage return	
+	_OSWarrior_SerialPort2_WriteChar(ASCII_LF);				//LF - Line Feed
+};
+
+/*
+** ===================================================================
+**     Function : Serial.printDigits
 **     Handler  : SerialPort2_PrintDigits
 **
 **     Description :
@@ -312,7 +293,7 @@ void _OSWarrior_SerialPort2_PrintDigits (T_SLONG number, int digits)
 
 /*
 ** ===================================================================
-**     Function : Serial2.printFloat
+**     Function : Serial.printFloat
 **     Handler  : _OSWarrior_SerialPort2_PrintFloatNumber
 **
 **     Description :
@@ -333,7 +314,7 @@ void _OSWarrior_SerialPort2_PrintFloatNumber(T_FLOAT number, int decimals)
 
 /*
 ** ===================================================================
-**     Function : Serial2.read
+**     Function : Serial.read
 **     Handler  : SerialPort2_Read
 **
 **     Description :
@@ -345,6 +326,16 @@ void _OSWarrior_SerialPort2_PrintFloatNumber(T_FLOAT number, int decimals)
 **     Returns     : Data read (Returns a pointer type variable)
 ** ===================================================================
 */
+T_UBYTE _OSWarrior_SerialPort2_Peek(void)
+{
+	register T_UBYTE read_data = 0x00;
+
+	if( _OSWarrior_SerialPort2_available >= 1 )									//Buffer data available
+	{
+		read_data = _OSWarrior_SerialPort2_Rx_Buff[_OSWarrior_SerialPort2_Rx_rd];	//Read the data
+	}
+	return read_data;
+}
 
 T_UBYTE _OSWarrior_SerialPort2_Read(void)
 {
@@ -368,18 +359,18 @@ T_UBYTE *_OSWarrior_SerialPort2_Read_String(void)
 	_OSWarrior_SerialPort2_String_nxt = 0;
 	while(!stringComplete)
 	{
-		while(!Serial2.available());
-		temp = Serial2.read();
+		while(!Serial.available());
+		temp = Serial.read();
 		if( ( temp != '\r' ) && ( temp != 0x00 ))	
 		{	
 			_OSWarrior_SerialPort2_String_Buff[_OSWarrior_SerialPort2_String_nxt] = temp;
 			_OSWarrior_SerialPort2_String_nxt++;	
-			Serial2.writeChar(temp);					//Echo data
+			Serial.writeChar(temp);					//Echo data
 		}
 		else
 		{
 			_OSWarrior_SerialPort2_String_Buff[_OSWarrior_SerialPort2_String_nxt] = 0x00;						//End string
-			Serial2.write("\r\n");					//Print new line
+			Serial.write("\r\n");					//Print new line
 			stringComplete = TRUE;
 		}
 	}
@@ -388,12 +379,12 @@ T_UBYTE *_OSWarrior_SerialPort2_Read_String(void)
 
 int _OSWarrior_SerialPort2_ReadNumber(void)
 {
-	return str_to_int(Serial2.readString());
+	return str_to_int(Serial.readString());
 }
 
 /*
 ** ===================================================================
-**     Function : Serial2.getChar
+**     Function : Serial.getChar
 **     Handler  : _OSWarrior_SerialPort2_GetChar
 **
 **     Description :
@@ -407,8 +398,8 @@ int _OSWarrior_SerialPort2_ReadNumber(void)
 
 T_UBYTE _OSWarrior_SerialPort2_GetChar(void)
 {
-	while(!Serial2.available());
-	return Serial2.read();
+	while(!Serial.available());
+	return Serial.read();
 }
 
 /*
@@ -420,14 +411,14 @@ T_UBYTE _OSWarrior_SerialPort2_GetChar(void)
 void _OSWarrior_SerialPort2_Enable_Tx(void)
 {
 	#ifdef __OSWarrior_DK__
-		SCI2C2_TE = 1u;	
+		SCI1C2_TE = 1u;	
 	#endif
 }
 
 void _OSWarrior_SerialPort2_Enable_Rx(void)
 {
 	#ifdef __OSWarrior_DK__
-		SCI2C2_RE = 1u;	
+		SCI1C2_RE = 1u;	
 	#endif
 }
 
@@ -440,14 +431,14 @@ void _OSWarrior_SerialPort2_Enable_Tx_Rx(void)
 void _OSWarrior_SerialPort2_Disable_Tx(void)
 {
 	#ifdef __OSWarrior_DK__
-		SCI2C2_TE = 0u;	
+		SCI1C2_TE = 0u;	
 	#endif
 }
 
 void _OSWarrior_SerialPort2_Disable_Rx(void)
 {
 	#ifdef __OSWarrior_DK__
-		SCI2C2_RE = 0u;	
+		SCI1C2_RE = 0u;	
 	#endif	
 }
 
@@ -462,14 +453,14 @@ void _OSWarrior_SerialPort2_Disable_Tx_Rx(void)
 void _OSWarrior_SerialPort2_Enable_Tx_ISR(void)
 {
 	#ifdef __OSWarrior_DK__
-		SCI2C2_TIE = 1u;	
+		SCI1C2_TIE = 1u;	
 	#endif
 }
 
 void _OSWarrior_SerialPort2_Enable_Rx_ISR(void)
 {
 	#ifdef __OSWarrior_DK__
-		SCI2C2_RIE = 1u;	
+		SCI1C2_RIE = 1u;	
 	#endif
 }
 
@@ -482,14 +473,14 @@ void _OSWarrior_SerialPort2_Enable_Tx_Rx_ISR(void)
 void _OSWarrior_SerialPort2_Disable_Tx_ISR(void)
 {
 	#ifdef __OSWarrior_DK__
-		SCI2C2_TIE = 0u;	
+		SCI1C2_TIE = 0u;	
 	#endif
 }
 
 void _OSWarrior_SerialPort2_Disable_Rx_ISR(void)
 {
 	#ifdef __OSWarrior_DK__
-		SCI2C2_RIE = 0u;	
+		SCI1C2_RIE = 0u;	
 	#endif
 }
 
@@ -501,7 +492,7 @@ void _OSWarrior_SerialPort2_Disable_Tx_Rx_ISR(void)
 
 /*
 ** ===================================================================
-**     Function : Serial2.printChar
+**     Function : Serial.printChar
 **     Handler  : _OSWarrior_SerialPort2_PrintChar
 **
 **     Description :
@@ -536,7 +527,7 @@ void _OSWarrior_SerialPort2_WriteChar(T_UBYTE data)
 
 /*
 ** ===================================================================
-**     Function : Serial2.print
+**     Function : Serial.print
 **     Handler  : _OSWarrior_SerialPort2_Print
 **
 **     Description :
@@ -579,7 +570,6 @@ __interrupt void _OSWarrior_SerialPort2_ISR_Write(void)
 		if( _OSWarrior_SerialPort2_Tx_rd >= OSWARRIOR_SERIAL_BUFF_LEN ) _OSWarrior_SerialPort2_Tx_rd = 0; 	
 		if( _OSWarrior_SerialPort2_Tx_rd == _OSWarrior_SerialPort2_Tx_nxt ) _OSWarrior_SerialPort2_Disable_Tx_ISR();
 		_OSWarrior_SerialPort2_Tx_Buff_full = FALSE;					
-		
 	}	
 }
 
@@ -601,13 +591,17 @@ __interrupt void _OSWarrior_SerialPort2_ISR_Read(void)
 	#ifdef __OSWarrior_DK__
 	{	
 		T_UBYTE status;
-		status = SCI2S1;
+		status = SCI1S1;
 		
-		if(status & SCI2S1_RDRF_MASK)
+		if(status & SCI1S1_RDRF_MASK)
 		{
 			_OSWarrior_SerialPort2_available++;										//Increment available values
 			
-			_OSWarrior_SerialPort2_Rx_Buff[_OSWarrior_SerialPort2_Rx_nxt] = SCI2D;		//Save the data
+			Serial.data = SCI1D;
+			
+			Serial.onReceive();
+			
+			_OSWarrior_SerialPort2_Rx_Buff[_OSWarrior_SerialPort2_Rx_nxt] = SCI1D;		//Save the data
 			_OSWarrior_SerialPort2_Rx_nxt++;										//Increment index
 			
 			if(_OSWarrior_SerialPort2_Rx_nxt >= OSWARRIOR_SERIAL_BUFF_LEN)			//Buffer overflow			

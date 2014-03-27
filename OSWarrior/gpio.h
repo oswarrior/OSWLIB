@@ -10,14 +10,6 @@
 **  Version:	 4.0
 **  Status: 	 Integrated
 ** =============================================================================
-**  							CHANGE LOG:
-** =============================================================================
-**	Date: 27/03/2013 - Version 2.0 freeze (Integrated)
-**	Date: 01/05/2012 - Several bugs fixed
-**	Date: 02/05/2013 - Version 2.1 freeze (Tested)
-**	Date: 22/06/2013 - Function descriptions added
-**	Date: 22/06/2013 - Version 3.0 freeze (Integrated)
-** =============================================================================
 **  							 LICENSE:
 ** =============================================================================
 **  This library is free software; you can redistribute it and/or
@@ -37,8 +29,8 @@
 	
 	#define OSWARRIOR_GPIO_H_
 	
-	extern void pinDirection(int pin, int direction);
-	extern void writePin(int pin, int value);
+	extern void pinMode(int pin, int direction);
+	extern void digitalWrite(int pin, int value);
 	extern void togglePin(int pin);
 	extern int readPin(int pin);
 	extern void writeNibble( T_UBYTE data, T_UBYTE bit3, T_UBYTE bit2, T_UBYTE bit1, T_UBYTE bit0 );

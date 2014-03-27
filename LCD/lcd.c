@@ -105,13 +105,13 @@ void _OSWarrior_lcd_init(T_UBYTE rows, T_UBYTE cols, T_UBYTE RS, T_UBYTE EN, T_U
 	LCD.d6 = d6;
 	LCD.d7 = d7;
 	
-	pinDirection(EN, OUTPUT);
-	pinDirection(RS, OUTPUT);
+	pinMode(EN, OUTPUT);
+	pinMode(RS, OUTPUT);
 	
-	pinDirection(d4, OUTPUT);
-	pinDirection(d5, OUTPUT);
-	pinDirection(d6, OUTPUT);
-	pinDirection(d7, OUTPUT);
+	pinMode(d4, OUTPUT);
+	pinMode(d5, OUTPUT);
+	pinMode(d6, OUTPUT);
+	pinMode(d7, OUTPUT);
 	
 	LCD.reset();         		// Call LCD reset
 	
@@ -135,9 +135,9 @@ void _OSWarrior_lcd_init(T_UBYTE rows, T_UBYTE cols, T_UBYTE RS, T_UBYTE EN, T_U
 
 void _OSWarrior_lcd_push_enable(void)
 {
-	writePin(LCD.en, LOW);
-	writePin(LCD.en, HIGH);
-	writePin(LCD.en, LOW);
+	digitalWrite(LCD.en, LOW);
+	digitalWrite(LCD.en, HIGH);
+	digitalWrite(LCD.en, LOW);
 }
 
 /*
@@ -156,12 +156,12 @@ void _OSWarrior_lcd_push_enable(void)
 void _OSWarrior_lcd_reset(void)
 {
 	writeNibble( 0x0F , LCD.d7, LCD.d6, LCD.d5, LCD.d4 );
-	writePin(LCD.en, 1);
-	writePin(LCD.rs, 1);
+	digitalWrite(LCD.en, 1);
+	digitalWrite(LCD.rs, 1);
 	delay(20);
 	
 	
-	writePin(LCD.rs, 0);
+	digitalWrite(LCD.rs, 0);
 	
 	writeNibble( 0x03 , LCD.d7, LCD.d6, LCD.d5, LCD.d4 );
 	_OSWarrior_lcd_push_enable();
@@ -199,7 +199,7 @@ void _OSWarrior_lcd_reset(void)
 	
 void _OSWarrior_lcd_cmd (T_UBYTE cmd)
 {
-	writePin(LCD.rs, 0);
+	digitalWrite(LCD.rs, 0);
 	
 	writeNibble( ((cmd >> 4) & NIBBLE_MASK ) , LCD.d7, LCD.d6, LCD.d5, LCD.d4 );
 	_OSWarrior_lcd_push_enable();
@@ -230,10 +230,9 @@ void _OSWarrior_lcd_print_char(T_UBYTE data)
 {
 	if(!data) return;
 	writeNibble( (data >> 4), LCD.d7, LCD.d6, LCD.d5, LCD.d4 );		//Write higher nibble
-	writePin(LCD.rs, 1);
+	digitalWrite(LCD.rs, 1);
 	_OSWarrior_lcd_push_enable();
 	writeNibble( data, LCD.d7, LCD.d6, LCD.d5, LCD.d4 );			//Write lower nibble
-	writePin(LCD.rs, 1);
 	_OSWarrior_lcd_push_enable();
 	delay(1);		
 }

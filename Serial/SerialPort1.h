@@ -18,25 +18,29 @@
     ** ===================================================================
     */
 
+	/* Control and Settings functions */ 
+	
 	PUBLIC_FCT void _OSWarrior_SerialPort1_Init(T_ULONG baudrate);
 	PUBLIC_FCT void _OSWarrior_SerialPort1_setBaudRate(T_ULONG baudrate);
 	PUBLIC_FCT void _OSWarrior_SerialPort1_End(void);
 	PUBLIC_FCT void _OSWarrior_SerialPort1_Clear(void);
-	PUBLIC_FCT void _OSWarrior_SerialPort1_NewLine(void);
 	PUBLIC_FCT T_UBYTE 	_OSWarrior_SerialPort1_Available(void);
 	
-	/* Print functions */
+	/* Print functions: Send numeric data trough the serial port */
 	
 	PUBLIC_FCT void _OSWarrior_SerialPort1_Print(T_SLONG number);
-	PUBLIC_FCT void _OSWarrior_SerialPort1_Print_Line(T_UBYTE *data);
+	PUBLIC_FCT void _OSWarrior_SerialPort1_Print_Line(T_SLONG number);
 	PUBLIC_FCT void _OSWarrior_SerialPort1_PrintDigits (T_SLONG number, int digits);
 	PUBLIC_FCT void _OSWarrior_SerialPort1_PrintFloatNumber(T_FLOAT number, int decimals);
+
+	/* Print functions: Send string and char data trough the serial port */
 
 	PUBLIC_FCT void _OSWarrior_SerialPort1_Write(T_UBYTE *data);
 	PUBLIC_FCT void _OSWarrior_SerialPort1_WriteChar(T_UBYTE data);
 
 	/* Read functions */
 	
+	PUBLIC_FCT T_UBYTE _OSWarrior_SerialPort1_Peek(void);
 	PUBLIC_FCT T_UBYTE _OSWarrior_SerialPort1_Read(void);
 	PUBLIC_FCT T_UBYTE *_OSWarrior_SerialPort1_Read_String(void);
 	PUBLIC_FCT void _OSWarrior_SerialPort1_Read_Handler(void);

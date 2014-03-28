@@ -8,7 +8,14 @@
 ** ===================================================================
 */
 
-static volatile T_ULONG _OSWarrior_tickCounter = 0;
+static volatile T_ULONG _OSWarrior_msCounter = 0;
+
+/*
+** ===================================================================
+** Delay interrupt function handler declarations
+** ===================================================================
+*/
+
 void ( * _OSWarrior_tickISR_handler )(void) = _OSWarrior_Dummy_Fnc;
 
 /*
@@ -57,6 +64,12 @@ void oswarrior_disableDelays(void)
 ** ===================================================================
 */
 
+void delayMicroseconds(unsigned int us)
+{
+	T_ULONG start_time = micros();
+	while( ( micros() - start_time ) < us );
+};
+
 void delay(unsigned int ms)
 {
 	T_ULONG start_time = millis();
@@ -75,9 +88,15 @@ void delay(unsigned int ms)
 ** ===================================================================
 */
 
+T_ULONG micros(void)
+{
+	T_FLOAT temp = TPM3MOD * 1000 / TPM3CNT;
+	return (_OSWarrior_msCounter * 1000) + (T_ULONG)temp;
+};
+
 T_ULONG millis(void)
 {
-	return _OSWarrior_tickCounter;
+	return _OSWarrior_msCounter;
 };
 
 /*
@@ -93,7 +112,7 @@ T_ULONG millis(void)
 
 __interrupt void fnc_oswarrior_tick_counter(void)
 {    
-	_OSWarrior_tickCounter++;
+	_OSWarrior_msCounter++;
 	OSWARRIOR_TICK_ACK;
 	(*_OSWarrior_tickISR_handler)();
 };

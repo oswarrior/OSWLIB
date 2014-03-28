@@ -531,7 +531,7 @@ void togglePin(int pin)
 
 /*
 ** ===================================================================
-**     Function : readPin
+**     Function : digitalRead
 **
 **     Description :
 **         This function reads the specified pin value. 
@@ -543,7 +543,7 @@ void togglePin(int pin)
 ** ===================================================================
 */
 	
-int readPin(int pin)
+int digitalRead(int pin)
 {
 	
 	switch(pin)

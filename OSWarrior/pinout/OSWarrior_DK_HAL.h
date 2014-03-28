@@ -472,7 +472,7 @@
 	** ===================================================================
 	*/
 	
-	#define OSWARRIOR_ENABLE_DELAYS	{ TPM3SC = 0x00u; TPM3MOD = BUSCLOCK / 1000; (void)TPM3SC; TPM3SC = 0x48U; }
+	#define OSWARRIOR_ENABLE_DELAYS	{ TPM3SC = 0x00u; TPM3MOD = BUSCLOCK / 8000; (void)TPM3SC; TPM3SC = 0x4BU; }
 	
 	/*
 	T_UWORD divider = 0x01;

@@ -380,7 +380,7 @@ void digitalWrite(int pin, int value)
 ** ===================================================================
 */
 	
-void togglePin(int pin)
+void digitalToggle(int pin)
 {
 	switch(pin)
 	{

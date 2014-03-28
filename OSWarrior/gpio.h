@@ -31,7 +31,7 @@
 	
 	extern void pinMode(int pin, int direction);
 	extern void digitalWrite(int pin, int value);
-	extern void togglePin(int pin);
+	extern void digitalToggle(int pin);
 	extern int digitalRead(int pin);
 	extern void writeNibble( T_UBYTE data, T_UBYTE bit3, T_UBYTE bit2, T_UBYTE bit1, T_UBYTE bit0 );
 	

@@ -205,7 +205,7 @@ void pinMode(int pin, int direction)
 
 /*
 ** ===================================================================
-**     Function : writePin
+**     Function : digitalWrite
 **
 **     Description :
 **         This function writes a boolean type value to the specified pin. 
@@ -368,7 +368,7 @@ void digitalWrite(int pin, int value)
 
 /*
 ** ===================================================================
-**     Function : togglePin
+**     Function : digitalToggle
 **
 **     Description :
 **         This function toggles the specified pin value. 

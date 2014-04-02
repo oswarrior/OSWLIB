@@ -68,6 +68,8 @@
 
 ***/
 
+#ifdef __OSWarrior_Micro__ 
+
 #ifndef OSWARRIOR_MICRO_PINOUT_H_
 	#define OSWARRIOR_MICRO_PINOUT_H_
 
@@ -391,3 +393,5 @@
 	#define ISR_I2C_Vector			0xFFCE
 	
 #endif /* MINI_PINOUT_H_ */
+
+#endif

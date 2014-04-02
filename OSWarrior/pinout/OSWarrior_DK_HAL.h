@@ -69,6 +69,7 @@
  	 	 	 	 	 	        	  ---------
 
 ***/
+#ifdef __OSWarrior_DK__ 
 
 #ifndef OSWARRIOR_MINI_PINOUT_H_
 	
@@ -654,3 +655,6 @@
 	#define OSWarrior_ISR_RTI_Vector			0xFFCC
 
 #endif /* MINI_PINOUT_H_ */
+	
+#endif
+	

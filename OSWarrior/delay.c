@@ -90,8 +90,8 @@ void delay(unsigned int ms)
 
 T_ULONG micros(void)
 {
-	T_FLOAT temp = TPM3MOD * 1000 / TPM3CNT;
-	return (_OSWarrior_msCounter * 1000) + (T_ULONG)temp;
+	T_ULONG temp = TPM3MOD * 1000 / TPM3CNT;
+	return (_OSWarrior_msCounter * 1000) + temp;
 };
 
 T_ULONG millis(void)

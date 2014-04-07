@@ -25,7 +25,7 @@ int lifos_pinDirection(T_UBYTE Channel, int Value)
 int lifos_pinRead(T_UBYTE Channel, int Value)
 {
 	(void) Value;
-	return readPin(Channel);
+	return digitalRead(Channel);
 }
 int lifos_pinWrite(T_UBYTE Channel, int Value)
 {
@@ -35,7 +35,7 @@ int lifos_pinWrite(T_UBYTE Channel, int Value)
 int lifos_pinToggle(T_UBYTE Channel, int Value)
 {
 	(void) Value;
-	togglePin(Channel);	
+	digitalToggle(Channel);	
 	return 0;
 }
 

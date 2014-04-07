@@ -42,7 +42,7 @@
 
 /*
 ** ===================================================================
-**     Function : pinDirection
+**     Function : pinMode
 **
 **     Description :
 **         This function configures the specified pin direction as input or output. 

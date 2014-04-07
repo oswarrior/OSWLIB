@@ -46,24 +46,18 @@
 	** ===================================================================
 	*/
 
-	#define LCD_CLR 			0x01
-	#define LCD_HOME 			0x02
-	#define LCD_HOME_CLR 		0x03
+	#define LCD_CLR 			0x01	//Clears all display and returns the cursor to the home position (Address 0).
+	#define LCD_HOME 			0x02	//Returns the cursor to the home position (Address 0). Returns display to its original state if it was shifted.
 
-	#define LCD_MOVE_CURSOR_R 	0x14
-	#define LCD_MOVE_CURSOR_L 	0x10
+	#define LCD_MOVE_CURSOR_R 	0x14	//Shifts the cursor position to the right (Address Counter is incremented by 1)
+	#define LCD_MOVE_CURSOR_L 	0x10	//Shifts the cursor position to the left (Address Counter is decremented by 1)  
 
-	#define LCD_SHIFT_R 		0x1C
-	#define LCD_SHIFT_L 		0x18
+	#define LCD_SCROLL_R 		0x1C	//Shifts the entire display to the left. The cursor follows the display shift
+	#define LCD_SCROLL_L 		0x18	//Shifts the entire display to the right. The cursor follows the display shift  
 	
-	#define LCD_DISPLAY_ON	 	0x0E
-	#define LCD_DISPLAY_OFF	 	0x08
-	
-	#define LCD_CURSOR_ON	 	0x0E
-	#define LCD_CURSOR_OFF	 	0x0C
-	
-	#define LCD_BLINK_ON		0x0F
-	#define LCD_BLINK_OFF		0x0E
+	#define LCD_BLINK_MASK		1u
+	#define LCD_CURSOR_MASK	 	2u
+	#define LCD_DISPLAY_MASK	4u
 
 	/*
 	** ===================================================================
@@ -95,10 +89,14 @@
 		void (*printFloat)(T_FLOAT, int);
 		
 		void (*setCursor)(int col, int row);
-		void (*cursor)(int enable);
 		
-		void (*blink)(int enable);
 		void (*display)(int enable);
+		void (*cursor)(int enable);
+		void (*blink)(int enable);
+
+		void (*scrollLeft)(void);
+		void (*scrollRight)(void);
+		
 	}S_LCDSTR;
 	
 	/*
@@ -126,6 +124,9 @@
 	PUBLIC_FCT void _OSWarrior_lcd_blink(int enable);
 	PUBLIC_FCT void _OSWarrior_lcd_display(int enable);
 	PUBLIC_FCT void _OSWarrior_lcd_cursor(int enable);
+
+	PUBLIC_FCT void _OSWarrior_lcd_scrollLeft(void);
+	PUBLIC_FCT void _OSWarrior_lcd_scrollRight(void);
 
 	/*
 	** ===================================================================

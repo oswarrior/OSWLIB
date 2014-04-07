@@ -32,6 +32,8 @@
 #include "oswlib/settings.h"
 #include "oswlib/LCD/lcd.h"
 
+PRIVATE_DATA T_UBYTE LCD_DISPLAY = 0x0F;
+
 /*
 ** ===================================================================
 ** LCD Structure definition
@@ -61,12 +63,14 @@ S_LCDSTR LCD = {
 	_OSWarrior_lcd_print_digits, 
 	_OSWarrior_lcd_print_float, 
 	
-	
 	_OSWarrior_lcd_setCursor, 
-	_OSWarrior_lcd_cursor,
 	
-	_OSWarrior_lcd_blink, 
 	_OSWarrior_lcd_display,
+	_OSWarrior_lcd_cursor,
+	_OSWarrior_lcd_blink, 
+	
+	_OSWarrior_lcd_scrollLeft, 
+	_OSWarrior_lcd_scrollRight, 
 };
 
 /*
@@ -116,9 +120,12 @@ void _OSWarrior_lcd_init(T_UBYTE rows, T_UBYTE cols, T_UBYTE RS, T_UBYTE EN, T_U
 	LCD.reset();         		// Call LCD reset
 	
 	LCD.command(0x28);       	// 4-bit mode - 2 line - 5x7 font. 
-	LCD.command(0x0C);       	// Display no cursor - no blink.
+	//LCD.command(0x0C);       	// Display no cursor - no blink.
 	LCD.command(0x06);       	// Automatic Increment - No Display shift.
 	LCD.command(0x80);       	// Address DDRAM with 0 offset 80h.	
+
+
+	LCD.command(LCD_DISPLAY);	// Display default configurations, Display ON, Cursor ON and Blink ON.	
 }
 
 /*
@@ -384,12 +391,12 @@ void _OSWarrior_lcd_setCursor (int col, int row)
 {
 	//Position the LCD cursor; that is, set the location at which 
 	//subsequent text written to the LCD will be displayed.
-	int i=0;
+	register int i = 0;
 	LCD.command(LCD_HOME);
 	//if we are on a 1-line display, set line_num to 1st line, regardless of given
-	if (row > LCD.rows) 	row = 1;
+	if (row > LCD.rows) row = 0;
 	//offset 40 chars for each row requested
-	col += 40 * (int)(row-1);
+	col += 40 * (int)(row);
 	//advance the cursor to the right according to position. (second line starts at position 40).
 	for (i=0; i<col; i++) 	_OSWarrior_lcd_moveCursorRight();
 }
@@ -432,27 +439,6 @@ void _OSWarrior_lcd_moveCursorLeft (void)
 
 /*
 ** ===================================================================
-**     Function : LCD.blink
-**     Handler  : _OSWarrior_lcd_blink
-**
-**     Description :
-**         	This function allows the LCD Display cursor to blink. 
-**     
-**     Parameters  : 
-**         	enable : Enable or Disable the cursor blinking
-**     
-**     Returns     : Nothing
-** ===================================================================
-*/
-	
-void _OSWarrior_lcd_blink(int enable)
-{
-	if(enable == 0) LCD.command(LCD_BLINK_OFF);
-	if(enable == 1) LCD.command(LCD_BLINK_ON);
-}
-
-/*
-** ===================================================================
 **     Function : LCD.display
 **     Handler  : _OSWarrior_lcd_display
 **
@@ -469,8 +455,9 @@ void _OSWarrior_lcd_blink(int enable)
 	
 void _OSWarrior_lcd_display(int enable)
 {
-	if(enable == 0) LCD.command(LCD_DISPLAY_OFF);
-	if(enable == 1) LCD.command(LCD_DISPLAY_ON);
+	if(enable)	LCD_DISPLAY |= LCD_DISPLAY_MASK;
+	else		LCD_DISPLAY = (T_UBYTE)(LCD_DISPLAY & ~LCD_DISPLAY_MASK);
+	LCD.command(LCD_DISPLAY);
 }
 
 /*
@@ -491,8 +478,31 @@ void _OSWarrior_lcd_display(int enable)
 	
 void _OSWarrior_lcd_cursor(int enable)
 {
-	if(enable == 0) LCD.command(LCD_CURSOR_OFF);
-	if(enable == 1) LCD.command(LCD_CURSOR_ON);
+	if(enable)	LCD_DISPLAY |= LCD_CURSOR_MASK;
+	else		LCD_DISPLAY = (T_UBYTE)(LCD_DISPLAY & ~LCD_CURSOR_MASK);
+	LCD.command(LCD_DISPLAY);
+}
+
+/*
+** ===================================================================
+**     Function : LCD.blink
+**     Handler  : _OSWarrior_lcd_blink
+**
+**     Description :
+**         	This function allows the LCD Display cursor to blink. 
+**     
+**     Parameters  : 
+**         	enable : Enable or Disable the cursor blinking
+**     
+**     Returns     : Nothing
+** ===================================================================
+*/
+	
+void _OSWarrior_lcd_blink(int enable)
+{
+	if(enable)	LCD_DISPLAY |= LCD_BLINK_MASK;
+	else		LCD_DISPLAY = (T_UBYTE)(LCD_DISPLAY & ~LCD_BLINK_MASK);
+	LCD.command(LCD_DISPLAY);
 }
 
 /*
@@ -512,4 +522,27 @@ void _OSWarrior_lcd_clear(void)
 {
 	LCD.command(LCD_CLR);
 	LCD.command(LCD_HOME);
+}
+
+/*
+** ===================================================================
+**     Function : LCD.clear
+**     Handler  : _OSWarrior_lcd_clear
+**
+**     Description :
+**         	This function clears all data in the LCD display. 
+**     
+**     Parameters  : Nothing
+**     Returns     : Nothing
+** ===================================================================
+*/
+	
+void _OSWarrior_lcd_scrollRight(void)
+{
+	LCD.command(LCD_SCROLL_R);
+}
+
+void _OSWarrior_lcd_scrollLeft(void)
+{
+	LCD.command(LCD_SCROLL_L);
 }

@@ -270,7 +270,7 @@ void _OSWarrior_i2c_send (T_UBYTE data)
 void _OSWarrior_i2c_end(void)
 {
 	T_UBYTE Temp;
-	_OSWarrior_i2c_ctrl_dataLength = _OSWarrior_i2c_write_index - 1;
+	_OSWarrior_i2c_ctrl_dataLength = _OSWarrior_i2c_write_index;
 	_OSWarrior_i2c_write_index = 0;
 	_OSWarrior_i2c_ctrl_step = HEADER_SENT;
 	_OSWarrior_i2c_ctrl_direction = TRANSMIT;

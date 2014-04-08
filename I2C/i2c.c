@@ -59,6 +59,7 @@ PRIVATE_DATA T_UBYTE 		_OSWarrior_i2c_read_index;
 PRIVATE_DATA T_UBYTE 		_OSWarrior_i2c_read_next;
 PRIVATE_DATA T_UBYTE 		_OSWarrior_i2c_read_buffer[16];
 
+/*
 #ifdef __OSWarrior_DK__
 	PRIVATE_DATA const int _OSWarrior_i2c_SCLdivider[64] = 
 	{
@@ -68,6 +69,7 @@ PRIVATE_DATA T_UBYTE 		_OSWarrior_i2c_read_buffer[16];
 		 640,  768,  896, 1024, 1152, 1280, 1536, 1920, 1280, 1536, 1792, 2048, 2304, 2560, 3072, 3840
 	};	
 #endif
+*/
 	
 /*
 ** ===================================================================
@@ -77,8 +79,8 @@ PRIVATE_DATA T_UBYTE 		_OSWarrior_i2c_read_buffer[16];
 
 S_I2CSTR I2C = {
 	0x1F, 
-	100000,
 	_OSWarrior_i2c_enable,
+	_OSWarrior_i2c_mode,
 	_OSWarrior_i2c_start,
 	_OSWarrior_i2c_send,
 	_OSWarrior_i2c_end,
@@ -108,18 +110,28 @@ void _OSWarrior_i2c_enable(T_UBYTE address)
 {
 	#ifdef __OSWarrior_DK__
 	{
-		static T_UBYTE Freq;
+		//static T_UBYTE Freq;
 		I2C_EN = I2C_ENABLED;		// Enable I2C
 		I2C.address = address;		// IIC Address to structure
 		I2C_ADD = address;			// IIC Address
-		Freq = _OSWarrior_i2c_baud_calc(I2C.baudRate);	
+		//Freq = _OSWarrior_i2c_baud_calc(I2C.baudRate);	
 		//I2C_FREQ = 0x4C;	
-		I2C_FREQ = Freq;	
+		I2C_FREQ = I2C_STANDARD;
+		//I2C_FREQ = Freq;	
 		_OSWarrior_i2c_ctrl_step = READY;
 		I2C_IE = I2C_IE_EN;			// Enable IIC interrupts    
 	}
 	#endif
 	
+}
+
+void _OSWarrior_i2c_mode(T_UBYTE mode)
+{
+	#ifdef __OSWarrior_DK__
+	{
+		I2C_FREQ = mode;
+	}
+	#endif
 }
 
 /*
@@ -149,12 +161,13 @@ void _OSWarrior_i2c_enable(T_UBYTE address)
 ** ===================================================================
 */
 
+/*
 T_UBYTE _OSWarrior_i2c_baud_calc(T_ULONG br)
 {
 	#ifdef __OSWarrior_DK__	
 	{
-		const T_UBYTE MULT = 0x01;
-		const T_UBYTE mul = 2;
+		const T_UBYTE MULT = 0x00;
+		const T_UBYTE mul = 1;
 		register T_UBYTE ICR;
 		T_UWORD SCLDivider = (T_UWORD)((BUSCLOCK/br)/mul);
 		ICR = _OSWarrior_i2c_select_icr(SCLDivider);	
@@ -162,6 +175,7 @@ T_UBYTE _OSWarrior_i2c_baud_calc(T_ULONG br)
 	}
 	#endif
 }
+*/
 
 /*
 ** ===================================================================
@@ -179,6 +193,7 @@ T_UBYTE _OSWarrior_i2c_baud_calc(T_ULONG br)
 ** ===================================================================
 */
 
+/*
 T_UBYTE _OSWarrior_i2c_select_icr(T_UWORD SCLDivider)
 {
 	#ifdef __OSWarrior_DK__
@@ -201,6 +216,7 @@ T_UBYTE _OSWarrior_i2c_select_icr(T_UWORD SCLDivider)
 	}
 	#endif
 }
+*/
 
 /*
 ** ===================================================================

@@ -42,7 +42,12 @@
 #ifndef OSWARRIOR_I2C_H_
 
     #define OSWARRIOR_I2C_H_    
-        
+
+	#ifdef __OSWarrior_DK__
+		#define I2C_STANDARD	0x59		/* 100 kbps */
+		#define I2C_FAST		0x03		/* 400 kbps */
+	#endif
+
     /*
 	** ===================================================================
 	** I2C type definitions
@@ -60,8 +65,8 @@
 	
 	typedef struct{
 		T_UBYTE address;
-		T_ULONG baudRate;
 		void (*enable)(T_UBYTE masterAddress);
+		void (*mode)(T_UBYTE mode);
 		void (*start)(T_UBYTE slaveAddress);
 		void (*send)(T_UBYTE value);
 		void (*end)(void);
@@ -85,8 +90,9 @@
     */
     
     PUBLIC_FCT void 	_OSWarrior_i2c_enable(T_UBYTE address);
-    PUBLIC_FCT T_UBYTE 	_OSWarrior_i2c_baud_calc(T_ULONG br);
-    PUBLIC_FCT T_UBYTE 	_OSWarrior_i2c_select_icr(T_UWORD SCLDivider);
+    PUBLIC_FCT void 	_OSWarrior_i2c_mode(T_UBYTE mode);
+    //PUBLIC_FCT T_UBYTE 	_OSWarrior_i2c_baud_calc(T_ULONG br);
+    //PUBLIC_FCT T_UBYTE 	_OSWarrior_i2c_select_icr(T_UWORD SCLDivider);
     
     PUBLIC_FCT void _OSWarrior_i2c_start(T_UBYTE slv_adr);
     PUBLIC_FCT void _OSWarrior_i2c_send (T_UBYTE value);

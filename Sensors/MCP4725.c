@@ -36,6 +36,7 @@ void _i2c_MCP4725_init(T_UBYTE addr)
 {
 	MCP4725.address = addr;
 	I2C.enable(I2C.address);
+	I2C.mode(I2C_FAST);
 }
 
 void _i2c_MCP4725_setVoltage( T_ULONG output, T_BOOLEAN writeEEPROM )

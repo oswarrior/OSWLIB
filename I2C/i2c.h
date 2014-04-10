@@ -48,6 +48,19 @@
 		#define I2C_FAST		0x03		/* 400 kbps */
 	#endif
 
+	/* I2C parameters */
+	#define I2C_BUFFER_SIZE		(50)
+	#define I2C_TXRX			(2)
+	#define I2C_TX				(0)
+	#define	I2C_RX				(1)
+	#define iPORT				(0x6E)
+
+	/* Driver-specific defines */
+	// Use polling instead of interrupt-driven transfers
+	#undef POLLING_MODE
+	// Use debug prints to view byte level transfers via COM port
+	#define DEBUG
+
     /*
 	** ===================================================================
 	** I2C type definitions
@@ -65,15 +78,23 @@
 	
 	typedef struct{
 		T_UBYTE address;
-		void (*enable)(T_UBYTE masterAddress);
-		void (*mode)(T_UBYTE mode);
-		void (*start)(T_UBYTE slaveAddress);
-		void (*send)(T_UBYTE value);
-		void (*end)(void);
-		void (*requestFrom)(T_UBYTE slaveAddress, T_UBYTE numberOfBytes);
+		void (*enable)(T_UBYTE);
+		void (*mode)(T_UBYTE);
+		void (*start)(T_UBYTE);
+		void (*send)(T_UBYTE);
+		void (*end)(T_BOOLEAN);
+		void (*requestFrom)(T_UBYTE, T_UBYTE);
 		T_UBYTE (*available)(void);
 		T_UBYTE (*read)(void);
 	}S_I2CSTR;
+	
+	typedef struct {
+	    int tx_index;						/* TX index */
+	    int rx_index;						/* RX index */
+	    int data_present;					/* Data present flag */
+	    T_ULONG length;						/* Length of the buffer in bytes */
+	    T_UBYTE buf[I2C_BUFFER_SIZE];		/* Data buffer */
+	} I2C_BUFFER;
     
     /*
     ** ===================================================================
@@ -96,7 +117,7 @@
     
     PUBLIC_FCT void _OSWarrior_i2c_start(T_UBYTE slv_adr);
     PUBLIC_FCT void _OSWarrior_i2c_send (T_UBYTE value);
-    PUBLIC_FCT void _OSWarrior_i2c_end(void);
+    PUBLIC_FCT void _OSWarrior_i2c_end(T_BOOLEAN stop);
 
     PUBLIC_FCT void 	_OSWarrior_i2c_requestFrom(T_UBYTE slv_adr, T_UBYTE numberOfBytes);
     PUBLIC_FCT T_UBYTE 	_OSWarrior_i2c_available(void);

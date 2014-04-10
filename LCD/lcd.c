@@ -224,7 +224,7 @@ void _OSWarrior_lcd_cmd (T_UBYTE cmd)
 **
 **     Description :
 **         	This function prints a single character in the LCD where
-**         	is the cursor. 
+**         	the cursor is. 
 **     
 **     Parameters  : 
 **         	data   : ASCII value to be printed
@@ -316,20 +316,17 @@ void _OSWarrior_lcd_print_digits (int number, int digits)
 
 /*
 ** ===================================================================
-**     Function : LCD.printDigits
-**     Handler  : _OSWarrior_lcd_print_digits
+**     Function : LCD.printFloat
+**     Handler  : _OSWarrior_lcd_print_float
 **
 **     Description :
-**         	This function prints a number in the LCD Display
-**         	where the quantity of digits to display can be configured 
-**         	by the user. 
-**         	
-**         	Example: for the number 75 and 3 digits this function 
-**         	will print 075. 
+**         	This function prints a float number in the LCD Display. 
+**         	The quantity of decimals to be displayed are chosen
+**			by the user. 
 **     
 **     Parameters  : 
 **         	number : number to send
-**         	digits : the number of digits to be displayed
+**         	num_decimals : the quantity of decimals to be displayed
 **     
 **     Returns     : Nothing
 ** ===================================================================
@@ -526,11 +523,11 @@ void _OSWarrior_lcd_clear(void)
 
 /*
 ** ===================================================================
-**     Function : LCD.clear
-**     Handler  : _OSWarrior_lcd_clear
+**     Function : LCD.scrollRight
+**     Handler  : _OSWarrior_lcd_scrollRight
 **
 **     Description :
-**         	This function clears all data in the LCD display. 
+**         	This function shifts cursor and text to the right
 **     
 **     Parameters  : Nothing
 **     Returns     : Nothing
@@ -542,6 +539,18 @@ void _OSWarrior_lcd_scrollRight(void)
 	LCD.command(LCD_SCROLL_R);
 }
 
+/*
+** ===================================================================
+**     Function : LCD.scrollLeft
+**     Handler  : _OSWarrior_lcd_scrollLeft
+**
+**     Description :
+**         	This function shifts cursor and text to the left
+**     
+**     Parameters  : Nothing
+**     Returns     : Nothing
+** ===================================================================
+*/
 void _OSWarrior_lcd_scrollLeft(void)
 {
 	LCD.command(LCD_SCROLL_L);

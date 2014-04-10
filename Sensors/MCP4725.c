@@ -43,18 +43,19 @@ void _i2c_MCP4725_setVoltage( T_ULONG output, T_BOOLEAN writeEEPROM )
 {
 	I2C.start(MCP4725.address);	
 	
+	
 	if (writeEEPROM)
 	{
 		//I2C.send(MCP4725_CMD_WRITEDACEEPROM);
 	}
 	else
 	{
-		//I2C.send(MCP4725_CMD_WRITEDAC);
+		I2C.send( (T_UBYTE)(0x000F & (output>>8)) );	// Upper data bits          (D11.D10.D9.D8.D7.D6.D5.D4)
+		I2C.send( (T_UBYTE)(0x00FF & (output)) );  		// Lower data bits          (D3.D2.D1.D0.x.x.x.x)
 	}
 	
-	I2C.send( (T_UBYTE)(0x000F & (output>>8)) );	// Upper data bits          (D11.D10.D9.D8.D7.D6.D5.D4)
-	I2C.send( (T_UBYTE)(0x00FF & (output)) );  		// Lower data bits          (D3.D2.D1.D0.x.x.x.x)
-	I2C.end();
+	I2C.end(1);
+
 }
 
 

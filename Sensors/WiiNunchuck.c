@@ -67,13 +67,13 @@ void _i2c_wiinunchuck_init(void){
 	I2C.start(0x52);	//OK
 	I2C.send(0xF0);		//OK
 	I2C.send(0x55);		//OK
-	I2C.end();
+	I2C.end(TRUE);
 	delay(10);
 	//Serial.getChar();
 	I2C.start(0x52);
 	I2C.send(0xFB);
 	I2C.send(0x00);
-	I2C.end();
+	I2C.end(TRUE);
 	//delay(5);
 
 	for(_i2c_wiinunchuck_i = 0; _i2c_wiinunchuck_i < 3; _i2c_wiinunchuck_i++){
@@ -117,7 +117,7 @@ void _i2c_wiinunchuck_update(void){
 void _i2c_wiinunchuck_sendZero(void){
 	I2C.start(0x52);
 	I2C.send((T_UBYTE)0x00);
-	I2C.end();	
+	I2C.end(1);	
 	delay(5);
 }
 

@@ -151,7 +151,7 @@ void _OSWarrior_SerialPort1_Init(T_ULONG baudrate)
 void _OSWarrior_SerialPort1_setBaudRate(T_ULONG baudrate)
 {
 	#ifdef __OSWarrior_DK__
-		SCI2BD = (unsigned int)(BUSCLOCK / (16 * baudrate));
+		SCI2BD = (unsigned int)(BUSCLOCK / (16 * baudrate) + 1);
 	#endif	
 }
 

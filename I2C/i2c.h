@@ -53,7 +53,14 @@
 	#define I2C_TXRX			(2)
 	#define I2C_TX				(0)
 	#define	I2C_RX				(1)
-	#define iPORT				(0x6E)
+
+	#define I2C_ST_COND			(2)
+	#define I2C_SP_COND			(1)
+	#define I2C_RS_COND			(0)
+
+	#define I2C_ST_CMD			(I2C_MODE = I2C_MASTER)
+	#define I2C_SP_CMD			(I2C_MODE = I2C_SLAVE)
+	#define I2C_RS_CMD			(IIC1C_RSTA = 1)
 
 	/* Driver-specific defines */
 	// Use polling instead of interrupt-driven transfers

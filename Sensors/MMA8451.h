@@ -1,5 +1,5 @@
-#ifndef OSWARRIOR_MMA8451_H_
-	#define OSWARRIOR_MMA8451_H_
+#ifndef OSWARRIOR_MCP4725_H_
+	#define OSWARRIOR_MCP4725_H_
 
 	#define MMA8451_SA0_GND		    0x1C	// Address if A0 is connected to GND or not connected
 	#define MMA8451_SA0_VCC		    0x1D 	// Address if A0 is connected to VCC

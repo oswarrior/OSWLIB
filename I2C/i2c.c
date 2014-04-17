@@ -54,9 +54,7 @@ PRIVATE_DATA I2C_BUFFER i2c_rx_buffer;
 PRIVATE_DATA T_UBYTE stop_condition;
 PRIVATE_DATA T_UBYTE master_mode;
 PRIVATE_DATA T_UBYTE master_tx_done;
-
-PRIVATE_DATA T_UBYTE _OSWarrior_i2c_read_next = 0;
-
+	
 /*
 ** ===================================================================
 ** I2C Structure definition
@@ -79,10 +77,14 @@ void _OSWarrior_i2c_enable(T_UBYTE address)
 {
 	#ifdef __OSWarrior_DK__
 	{
-		I2C_EN = I2C_ENABLED;		//OK
-		I2C.address = address;		//OK
-		I2C_ADD = address;			//OK
-		I2C_FREQ = I2C_STANDARD;	//OK
+		
+		I2C_EN = I2C_ENABLED;
+		
+		//IIC1C = IIC1C_IICEN_MASK;
+		
+		I2C.address = address;		// IIC Address to structure
+		I2C_ADD = address;			// IIC Address
+		I2C_FREQ = I2C_STANDARD;
 	}
 	#endif
 	
@@ -92,55 +94,53 @@ void _OSWarrior_i2c_mode(T_UBYTE mode)
 {
 	#ifdef __OSWarrior_DK__
 	{
-		I2C_FREQ = mode;			//OK
+		I2C_FREQ = mode;
 	}
 	#endif
 }
 
 void _OSWarrior_i2c_start (T_UBYTE slv_adr)
 {
-	i2c_tx_buffer.tx_index = 0;		//OK
-	i2c_tx_buffer.buf[i2c_tx_buffer.tx_index++] = slv_adr;		//OK
+	i2c_tx_buffer.tx_index = 0;
+	i2c_tx_buffer.buf[i2c_tx_buffer.tx_index++] = slv_adr;
 }
 
 void _OSWarrior_i2c_send (T_UBYTE data)
 {
-	i2c_tx_buffer.buf[i2c_tx_buffer.tx_index++] = data;			//OK
+	i2c_tx_buffer.buf[i2c_tx_buffer.tx_index++] = data;
 }
 
 void _OSWarrior_i2c_end(T_BOOLEAN stop)
 {
+	int Temp;
 	
 	#ifdef __OSWarrior_DK__
 	{
 		
-		//while (IIC1S & IIC1S_BUSY_MASK);
+		while (IIC1S & IIC1S_BUSY_MASK);
 		
-		stop_condition = (T_UBYTE)stop;		//OK
+		stop_condition = (T_UBYTE)stop;
 		
 		master_mode = I2C_TX;
-		//master_tx_done = FALSE;
+		master_tx_done = FALSE;
 
 		/* Reset index for TX and RX buffers */
 		i2c_tx_buffer.length = i2c_tx_buffer.tx_index - 1;
 		
 		i2c_tx_buffer.tx_index = 0;
 		
-		I2C_EN = I2C_DISABLED;			
-		I2C_EN = I2C_ENABLED;
-		
 		I2C_TMODE = I2C_TRANSMIT;
-		I2C_ST_CMD;
+		I2C_MODE = I2C_MASTER;
 		I2C_IE = I2C_IE_EN;
 						
 		/* Put target address into IBDR */
 		IIC1D = ( 0 | (i2c_tx_buffer.buf[i2c_tx_buffer.tx_index++]<<1) | master_mode);
 		
 		/* Wait for I2SR[IBB] (bus busy) to be set */
-		//while (!(IIC1S & IIC1S_BUSY_MASK));
+		while (!(IIC1S & IIC1S_BUSY_MASK));
 
 		/* Wait for bus to become free before continuing */
-		//while (IIC1S & IIC1S_BUSY_MASK);
+		while (IIC1S & IIC1S_BUSY_MASK);
 		
 		/* Restore module to it's idle (but active) state */
 		//IIC1C |= IIC1C_IICIE_MASK;
@@ -152,48 +152,37 @@ void _OSWarrior_i2c_end(T_BOOLEAN stop)
 }
 
 void _OSWarrior_i2c_requestFrom(T_UBYTE slv_adr, T_UBYTE numberOfBytes)
-{	
-	T_UBYTE Temp;
-
+{
+	int Temp;
+	
 	#ifdef __OSWarrior_DK__
 	{
+		
+		while (IIC1S & IIC1S_BUSY_MASK);
+		
 		stop_condition = 1;
-
-		i2c_rx_buffer.length = numberOfBytes;
 		
 		master_mode = I2C_RX;
 		master_tx_done = FALSE;
 
-    	/* Reset index for TX and RX buffers */
-		_OSWarrior_i2c_read_next = 0;
-    	i2c_tx_buffer.tx_index = 0;
-    	i2c_rx_buffer.rx_index = 0;
-
-    	//while (IIC1S & IIC1S_BUSY_MASK);
-    	
-		/* Reset index for TX and RX buffers */
-	
-		I2C_EN = I2C_DISABLED;			
-		I2C_EN = I2C_ENABLED;
+		i2c_rx_buffer.rx_index = 0;
 		
 		I2C_TMODE = I2C_TRANSMIT;
-		
-		I2C_ST_CMD;
-		
-		for(Temp=0;Temp<3;Temp++);				/* Small delay */	
-
+		I2C_MODE = I2C_MASTER;
+		I2C_IE = I2C_IE_EN; 
+						
 		/* Put target address into IBDR */
-		I2C_DATA = ((slv_adr<<1)&0xFE)|0x01;
+		IIC1D = ( 0 | (slv_adr << 1) | master_mode);
 		
 		/* Wait for I2SR[IBB] (bus busy) to be set */
-		//while (!(IIC1S & IIC1S_BUSY_MASK));
+		while (!(IIC1S & IIC1S_BUSY_MASK));
 
 		/* Wait for bus to become free before continuing */
-		//while (IIC1S & IIC1S_BUSY_MASK);
+		while (IIC1S & IIC1S_BUSY_MASK);
 		
 		/* Restore module to it's idle (but active) state */
 		//IIC1C |= IIC1C_IICIE_MASK;
-		
+
 		return;
 		
 	}
@@ -207,12 +196,12 @@ T_UBYTE _OSWarrior_i2c_available(void)
 }
 
 T_UBYTE _OSWarrior_i2c_read(void)
-{	
-	T_UBYTE temp = i2c_rx_buffer.buf[_OSWarrior_i2c_read_next++];
+{
+	PRIVATE_DATA T_UBYTE index = 0;
 	
-	i2c_rx_buffer.rx_index--;
-
-	if(i2c_rx_buffer.rx_index == 0) _OSWarrior_i2c_read_next = 0;
+	T_UBYTE temp = i2c_rx_buffer.buf[index++];
+	
+	if(index == i2c_rx_buffer.rx_index) index = 0;
 		
 	return temp; 
 }
@@ -268,28 +257,26 @@ void _OSWarrior_i2c_master(void)
 		if (IIC1C & IIC1C_TX_MASK)
 		{
 	   		/* Master Transmit Mode - Check if last byte was tranmitted. */
-	    	if ( (i2c_tx_buffer.length == 0) && (master_mode != I2C_RX) )
+	    	if ( i2c_tx_buffer.length == 0 )
 	    	{
-				if(stop_condition == 1) I2C_SP_CMD;	/* Generate a stop condition        */            
-				else I2C_RS_CMD;						/* Generate a repeated start condition */
+				if(stop_condition == 1) I2C_MODE = I2C_SLAVE;	/* Generate a stop condition        */            
+				else IIC1C_RSTA = 1;						/* Generate a repeated start condition */
 	    	}
 	    	else
 	    	{
 				/* More bytes to be transmitted - Check if ACK received. */
-				if (I2C_ACK == I2C_NO_ACK)
+				if (IIC1S & IIC1S_RXAK_MASK)
 				{
 		    		/* ACK not received - Generate STOP */
-					I2C_SP_CMD;
+					IIC1C &= (T_UBYTE)(~IIC1C_MST_MASK & 0xFF);
 				}
 				else
 				{
 		    		/* Check if end of address cycle */
 		    		if (master_mode == I2C_RX)
 		    		{
-		    			/* Switch to RX Mode */
-		    			I2C_TMODE = I2C_RECEIVE;
-		    			/* Dummy read from IICD */
-		    			(void)I2C_DATA;
+		    			IIC1C &= (T_UBYTE)(~IIC1C_TX_MASK & 0xFF);
+						dummy_read = IIC1D;
 		    		}
 		    		/* ACK received, send data */
 		    		else
@@ -306,9 +293,10 @@ void _OSWarrior_i2c_master(void)
 	    	/* Master Receive Mode - Check if this is last byte to be read. */	    
 	    	if (i2c_rx_buffer.length == 1)
 	    	{
+				//printf("I2CR TXAK = 0x%02X\n",IIC1C);
 				/* Last byte to be read - 
 				   Generate Stop signal by changing to Slave Mode. */
-	    		I2C_SP_CMD;
+				IIC1C &= (T_UBYTE)(~IIC1C_MST_MASK & 0xFF);
 	    	}
 	    	else
 	    	{
@@ -318,12 +306,12 @@ void _OSWarrior_i2c_master(void)
 		    		/* Second to last byte to be read - Set Transmit Acknowledge Enable
 		    		   bit so no ACK is sent after the next byte is received, which
 		    		   indicates "end of data" to the slave. */
-		    		I2C_TACK = I2C_NO_TACK;
+		    		IIC1C |= IIC1C_TXAK_MASK;
 				}
 	    	}
 
 	    	/* Store received data in RX buffer */
-	    	i2c_rx_buffer.buf[i2c_rx_buffer.rx_index++] = I2C_DATA;
+	    	i2c_rx_buffer.buf[i2c_rx_buffer.rx_index++] = IIC1D;
 	    	i2c_rx_buffer.length--;
 		} 
 	}

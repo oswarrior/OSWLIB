@@ -32,6 +32,8 @@
 	#define _I2C_WIINUNCHUCK_DEFAULT_ZERO_JOY_X		122
 	#define _I2C_WIINUNCHUCK_DEFAULT_ZERO_JOY_Y		127
 
+	#define _I2C_WIINUNCHUCK_ADD					0x52
+
 	/*
 	** ===================================================================
 	** Function prototypes	

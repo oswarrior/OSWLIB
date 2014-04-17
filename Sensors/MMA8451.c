@@ -17,7 +17,7 @@ void _i2c_MMA8451_init(T_UBYTE addr)
 
 T_UBYTE _i2c_MMA8451_ID( )
 {
-	register int j;
+	T_UBYTE temp = 0;
 	
 	I2C.start(MMA8451.address);		
 	I2C.send( (T_UBYTE) MMA8451_WHO_AM_I );	// Upper data bits          (D11.D10.D9.D8.D7.D6.D5.D4)
@@ -25,12 +25,11 @@ T_UBYTE _i2c_MMA8451_ID( )
 	
 	//for(j = 0; j < 250; j++);
 	
-	I2C.requestFrom(MMA8451.address, 1);
+	I2C.requestFrom(MMA8451.address, 2);
 	
-	if(I2C.available())
-		return (T_UBYTE)I2C.read();
-	else
-		return 0x99;
+	while(I2C.available())	temp = (T_UBYTE)I2C.read();
+	
+	return temp;
 }
 
 

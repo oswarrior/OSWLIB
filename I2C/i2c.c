@@ -261,9 +261,6 @@ void _OSWarrior_i2c_master(void)
 	#ifdef __OSWarrior_DK__
 	{
 
-		/* Temp variable for dummy reads */
-		T_UBYTE dummy_read;    
-
 		/* Master Mode - Check if this device is in Transmit or Receive Mode. */
 		if (IIC1C & IIC1C_TX_MASK)
 		{

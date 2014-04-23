@@ -598,17 +598,17 @@ __interrupt void _OSWarrior_SerialPort1_ISR_Read(void)
 		{
 			_OSWarrior_SerialPort1_available++;										//Increment available values
 			
-			Serial.data = SCI2D;
+			Serial.data = SerialPort1_Data;
 			
 			Serial.onReceive();
 			
-			_OSWarrior_SerialPort1_Rx_Buff[_OSWarrior_SerialPort1_Rx_nxt] = SCI2D;		//Save the data
-			_OSWarrior_SerialPort1_Rx_nxt++;										//Increment index
+			_OSWarrior_SerialPort1_Rx_Buff[_OSWarrior_SerialPort1_Rx_nxt] = SerialPort1_Data;		//Save the data
+			_OSWarrior_SerialPort1_Rx_nxt++;														//Increment index
 			
-			if(_OSWarrior_SerialPort1_Rx_nxt >= OSWARRIOR_SERIAL_BUFF_LEN)			//Buffer overflow			
+			if(_OSWarrior_SerialPort1_Rx_nxt >= OSWARRIOR_SERIAL_BUFF_LEN)							//Buffer overflow			
 				_OSWarrior_SerialPort1_Rx_nxt = 0;
 			
-			if(_OSWarrior_SerialPort1_Rx_nxt == _OSWarrior_SerialPort1_Rx_rd)			//Buffer full
+			if(_OSWarrior_SerialPort1_Rx_nxt == _OSWarrior_SerialPort1_Rx_rd)						//Buffer full
 				_OSWarrior_SerialPort1_Rx_Buff_full = TRUE;
 			else
 				_OSWarrior_SerialPort1_Rx_Buff_full = FALSE;			

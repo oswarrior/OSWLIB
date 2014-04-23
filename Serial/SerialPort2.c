@@ -76,6 +76,7 @@ volatile T_BOOLEAN _OSWarrior_SerialPort2_Tx_active = FALSE;
 
 S_SCISTR Serial2 = {
 	0x00,
+	
 	_OSWarrior_SerialPort2_Init,
 	_OSWarrior_SerialPort2_End,
 	_OSWarrior_SerialPort2_Clear,
@@ -150,7 +151,7 @@ void _OSWarrior_SerialPort2_Init(T_ULONG baudrate)
 void _OSWarrior_SerialPort2_setBaudRate(T_ULONG baudrate)
 {
 	#ifdef __OSWarrior_DK__
-		SCI1BD = (unsigned int)(BUSCLOCK / (16 * baudrate) + 1);
+		SCI1BD = (unsigned int)(BUSCLOCK / (16 * baudrate));
 	#endif	
 }
 
@@ -597,17 +598,17 @@ __interrupt void _OSWarrior_SerialPort2_ISR_Read(void)
 		{
 			_OSWarrior_SerialPort2_available++;										//Increment available values
 			
-			Serial.data = SCI1D;
+			Serial.data = SerialPort2_Data;
 			
 			Serial.onReceive();
 			
-			_OSWarrior_SerialPort2_Rx_Buff[_OSWarrior_SerialPort2_Rx_nxt] = SCI1D;		//Save the data
-			_OSWarrior_SerialPort2_Rx_nxt++;										//Increment index
+			_OSWarrior_SerialPort2_Rx_Buff[_OSWarrior_SerialPort2_Rx_nxt] = SerialPort2_Data;		//Save the data
+			_OSWarrior_SerialPort2_Rx_nxt++;														//Increment index
 			
-			if(_OSWarrior_SerialPort2_Rx_nxt >= OSWARRIOR_SERIAL_BUFF_LEN)			//Buffer overflow			
+			if(_OSWarrior_SerialPort2_Rx_nxt >= OSWARRIOR_SERIAL_BUFF_LEN)							//Buffer overflow			
 				_OSWarrior_SerialPort2_Rx_nxt = 0;
 			
-			if(_OSWarrior_SerialPort2_Rx_nxt == _OSWarrior_SerialPort2_Rx_rd)			//Buffer full
+			if(_OSWarrior_SerialPort2_Rx_nxt == _OSWarrior_SerialPort2_Rx_rd)						//Buffer full
 				_OSWarrior_SerialPort2_Rx_Buff_full = TRUE;
 			else
 				_OSWarrior_SerialPort2_Rx_Buff_full = FALSE;			

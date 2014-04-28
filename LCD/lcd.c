@@ -54,6 +54,7 @@ S_LCDSTR LCD = {
 	_OSWarrior_lcd_init, 
 	_OSWarrior_lcd_reset,
 	_OSWarrior_lcd_clear,
+	_OSWarrior_lcd_clear_row,
 	
 	_OSWarrior_lcd_build,
 	_OSWarrior_lcd_cmd, 
@@ -186,6 +187,7 @@ void _OSWarrior_lcd_reset(void)
 	_OSWarrior_lcd_push_enable();
 	delay(1);
 	
+	LCD.command(0x02);
 	
 }
 
@@ -224,7 +226,7 @@ void _OSWarrior_lcd_cmd (T_UBYTE cmd)
 **
 **     Description :
 **         	This function prints a single character in the LCD where
-**         	the cursor is. 
+**         	is the cursor. 
 **     
 **     Parameters  : 
 **         	data   : ASCII value to be printed
@@ -235,7 +237,7 @@ void _OSWarrior_lcd_cmd (T_UBYTE cmd)
 	
 void _OSWarrior_lcd_print_char(T_UBYTE data)
 {
-	if(!data) return;
+	//if(!data) return;
 	writeNibble( (data >> 4), LCD.d7, LCD.d6, LCD.d5, LCD.d4 );		//Write higher nibble
 	digitalWrite(LCD.rs, 1);
 	_OSWarrior_lcd_push_enable();
@@ -316,17 +318,20 @@ void _OSWarrior_lcd_print_digits (int number, int digits)
 
 /*
 ** ===================================================================
-**     Function : LCD.printFloat
-**     Handler  : _OSWarrior_lcd_print_float
+**     Function : LCD.printDigits
+**     Handler  : _OSWarrior_lcd_print_digits
 **
 **     Description :
-**         	This function prints a float number in the LCD Display. 
-**         	The quantity of decimals to be displayed are chosen
-**			by the user. 
+**         	This function prints a number in the LCD Display
+**         	where the quantity of digits to display can be configured 
+**         	by the user. 
+**         	
+**         	Example: for the number 75 and 3 digits this function 
+**         	will print 075. 
 **     
 **     Parameters  : 
 **         	number : number to send
-**         	num_decimals : the quantity of decimals to be displayed
+**         	digits : the number of digits to be displayed
 **     
 **     Returns     : Nothing
 ** ===================================================================
@@ -523,11 +528,11 @@ void _OSWarrior_lcd_clear(void)
 
 /*
 ** ===================================================================
-**     Function : LCD.scrollRight
-**     Handler  : _OSWarrior_lcd_scrollRight
+**     Function : LCD.clear
+**     Handler  : _OSWarrior_lcd_clear
 **
 **     Description :
-**         	This function shifts cursor and text to the right
+**         	This function clears all data in the LCD display. 
 **     
 **     Parameters  : Nothing
 **     Returns     : Nothing
@@ -539,19 +544,30 @@ void _OSWarrior_lcd_scrollRight(void)
 	LCD.command(LCD_SCROLL_R);
 }
 
-/*
-** ===================================================================
-**     Function : LCD.scrollLeft
-**     Handler  : _OSWarrior_lcd_scrollLeft
-**
-**     Description :
-**         	This function shifts cursor and text to the left
-**     
-**     Parameters  : Nothing
-**     Returns     : Nothing
-** ===================================================================
-*/
 void _OSWarrior_lcd_scrollLeft(void)
 {
 	LCD.command(LCD_SCROLL_L);
+}
+
+/*
+** ===================================================================
+**     Function : LCD.clearRow
+**     Handler  : _OSWarrior_lcd_clear_row
+**
+**     Description :
+**         	This function clears all data in the LCD display. 
+**     
+**     Parameters  : 
+**             row : row to be cleared.
+**             
+**     Returns     : Nothing
+** ===================================================================
+*/
+	
+void _OSWarrior_lcd_clear_row(int row)
+{
+	register int i = 0;
+	_OSWarrior_lcd_setCursor(0,row);
+	for(i=0;i<LCD.cols;i++)
+		_OSWarrior_lcd_print_char(0x20);	//Prints blank space
 }

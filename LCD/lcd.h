@@ -79,6 +79,7 @@
 		void (*init)(T_UBYTE rows, T_UBYTE cols, T_UBYTE rs, T_UBYTE en, T_UBYTE d4, T_UBYTE d5, T_UBYTE d6, T_UBYTE d7);		
 		void (*reset)(void);
 		void (*clear)(void);
+		void (*clearRow)(int);
 
 		void (*customChar)(T_UBYTE location, T_UBYTE *ptr);
 		void (*command)(T_UBYTE cmd);
@@ -110,6 +111,7 @@
 	PUBLIC_FCT void _OSWarrior_lcd_cmd(T_UBYTE cmd);
 	PUBLIC_FCT void _OSWarrior_lcd_push_enable(void);
 	PUBLIC_FCT void _OSWarrior_lcd_clear(void);
+	PUBLIC_FCT void _OSWarrior_lcd_clear_row(int);
 	
 	PUBLIC_FCT void _OSWarrior_lcd_print (T_UBYTE *str);
 	PUBLIC_FCT void _OSWarrior_lcd_print_char (T_UBYTE data);

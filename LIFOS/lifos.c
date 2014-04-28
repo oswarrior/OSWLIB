@@ -1,28 +1,3 @@
-/* =============================================================================
-** 					OSWarrior - EMBEDDED SYSTEMS SOFTWARE            	  	  
-** =============================================================================
-**                       	OBJECT SPECIFICATION                                
-** =============================================================================
-**  Filename: 	 lifos.c
-**  Description: LabVIEW Interface for OSWarrior functions definitions
-** =============================================================================
-**  Author:		 Hugo Arganda (hugo.arganda@gmail.com)
-** =============================================================================
-**  							 LICENSE:
-** =============================================================================
-**  This library is free software; you can redistribute it and/or
-**  modify it under the terms of the Attribution-ShareAlike
-**  License as published by the Creative Commons Organisation; either
-**  version 3.0 of the License, or (at your option) any later version.
-**  This library is distributed in the hope that it will be useful,
-**  but WITHOUT ANY WARRANTY; without even the implied warranty of
-**  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
-**  See the Attribution-ShareAlike License for more details.
-**  You should have received a copy of the Creative Commons Attribution-ShareAlike 
-**  License along with this library; if not send a email to the library author.
-** =============================================================================
-*/
-
 /*
 ** ===================================================================
 ** LIFOS includes
@@ -59,7 +34,7 @@ PRIVATE_DATA T_BOOLEAN 	LIFOS_busy = FALSE;
 
 S_LIFOS_RX_PKG LIFOS_pkg = {0, 0, 0, 0, 0, 0, 0, 0 };
 
-S_SCISTR * LIFOS_Serial;
+S_SCISTR * LIFOS_Port;
 
 /*
 ** ===================================================================
@@ -75,55 +50,38 @@ S_SCISTR * LIFOS_Serial;
 ** ===================================================================
 */
 
-void LIFOS(S_SCISTR * userSerialPort, T_ULONG br)
+void LIFOS(S_SCISTR * userSerialPort, T_ULONG br, E_FNC_METHOD method )
 {
-	LIFOS_Serial = userSerialPort;
-	LIFOS_Serial->begin(br);
-	LIFOS_Serial->write("\fNew LIFOS Library test - T3");
-	LIFOS_Serial->onReceive = &LIFOS_eventListener;
+	LIFOS_Port = userSerialPort;
+	LIFOS_Port->begin(br);
+	if(method == ISR)	LIFOS_Port->onReceive = &LIFOS_eventListener;
 }
 
-/*
-** ===================================================================
-**     Function : LIFOS
-**
-**     Description :
-**          Initialise the OSWarrior I2C library and set the device
-**          address when used as slave, this function must me called
-**          only once.
-**     
-**     Parameters  : Nothing
-**     Returns     : Nothing
-** ===================================================================
-*/
+/* Metodo por interrupcion en el puerto serial, llamar a LIFOS.ejecutar dentro de la funcion loop*/
 
-void LIFOS_eventListener(void)
+void LIFOS_ISR_Listener(void)
 {
-	LIFOS_rx_pkg[LIFOS_rx_nxt] = LIFOS_Serial->data;	//Save Data T_UBYTE
+	LIFOS_rx_pkg[LIFOS_rx_nxt] = LIFOS_Port->data;		//Save Data T_UBYTE
 	LIFOS_rx_nxt++;										//Increment Counters						
-		
 	if(LIFOS_rx_nxt >= LIFOS_PKG_SIZE)					//Full Data Package Received
 	{			
-		LIFOS_pkg_decode(LIFOS_rx_pkg);					//Process Data
+		LIFOS_pkg_decode(LIFOS_rx_pkg);					//Decode Data
 		LIFOS_rx_nxt = 0;
 	}
 }
 
-/*
-** ===================================================================
-**     Function : LIFOS_pkg_decode
-**
-**     Description :
-**          Initialise the OSWarrior I2C library and set the device
-**          address when used as slave, this function must me called
-**          only once.
-**     
-**     Parameters  : 
-**          package: Device address when used as slave
-**     
-**     Returns     : Nothing
-** ===================================================================
-*/
+/* Metodo por polling del puerto serial, ejecutar dentro de la funcion loop*/
+
+void LIFOS_POL_Listener(void)
+{
+	while(LIFOS_Port->available < LIFOS_PKG_SIZE);
+	for(LIFOS_rx_nxt = 0; LIFOS_rx_nxt < LIFOS_PKG_SIZE; LIFOS_rx_nxt++)
+	{
+		LIFOS_rx_pkg[LIFOS_rx_nxt] = LIFOS_Port->read;
+	}
+	LIFOS_pkg_decode(LIFOS_rx_pkg);						//Decode Data
+	LIFOS_rx_nxt = 0;
+}
 
 void LIFOS_pkg_decode(T_UBYTE package[])
 {
@@ -151,8 +109,8 @@ void LIFOS_pkg_decode(T_UBYTE package[])
 			if(LIFOS_rx_clc_chk == LIFOS_pkg.CHK)					//CHK Correct
 			{				
 
-				LIFOS_pkg.CMD = package[1];			//CMD
-				LIFOS_pkg.CH = package[2] - 0x30;					//Channel
+				LIFOS_pkg.CMD = package[1];							//CMD
+				LIFOS_pkg.CH  = package[2] - 0x30;					//Channel
 								
 				for(i=0; i < LIFOS_CMD_LIST_LEN; i++)
 				{     
@@ -178,52 +136,51 @@ void LIFOS_pkg_decode(T_UBYTE package[])
 				
 				if(CmdFound == TRUE)
 				{
-					/*	OK, Action: Send Positive Response */
+					/*	
+					 * STATUS: OK 
+					 * Action: Send Positive Response 
+					 */
 					LIFOS_pkg_encode(LIFOS_TX_DID, RSP_POSITIVE, (0xFF - LIFOS_pkg.CMD), readed_value);	
 				}
 				else
 				{
-					/*	ERROR, Action: Send Command not found Message */
+					/*	
+					 * STATUS: ERROR - Command not found 
+					 */
 					LIFOS_pkg_encode(LIFOS_TX_DID, RSP_NEGATIVE, ERROR_CMD_NOTFOUND, 0);	
 				}
 			}
 			else
 			{
-				/*	ERROR: Checksum mismatch, Action: Request message re-send */
+				/*	
+				 * 	STATUS: ERROR - Checksum mismatch
+				 * 	Action: Request message re-send 
+				 */
 				LIFOS_pkg_encode(LIFOS_TX_DID, RSP_NEGATIVE, ERROR_CHK_MISM, 0);
 			}
 		}
 		else
 		{
-			/*	ERROR: Device ID Received incorrectly, Action: Clear buffer for error and request package re-send */
+			/*	
+			 * 	STATUS: ERROR - Device ID Received incorrectly.
+			 * 	Action: Clear buffer for error and request package re-send. 
+			 */
 			LIFOS_pkg_encode(LIFOS_TX_DID, RSP_NEGATIVE, ERROR_WRNG_DID, 0);
 		}		
 	}
 	else
 	{
-		/*	ERROR: The slave is busy, Action: Send "Slave Busy" Message */
+		/*	
+		 * STATUS: ERROR - Slave Busy.
+		 * Action: Send "Slave Busy" Message.
+		 */
 		LIFOS_pkg_encode(LIFOS_TX_DID, RSP_NEGATIVE, ERROR_SLV_BUSY, 0);
 	}
 	
 }
 
-/*
-** ===================================================================
-**     Function : LIFOS_pkg_encode
-**
-**     Description :
-**          Initialise the OSWarrior I2C library and set the device
-**          address when used as slave, this function must me called
-**          only once.
-**     
-**     Parameters  : 
-**          value_to_send	: Device address when used as slave
-**     
-**     Returns     : Nothing
-** ===================================================================
-*/
-
-void LIFOS_pkg_encode(T_UBYTE did, T_UBYTE rsp, T_UBYTE ack, int value_to_send){
+void LIFOS_pkg_encode(T_UBYTE did, T_UBYTE rsp, T_UBYTE ack, int value_to_send)
+{
 
 	register int i = 0;
 	T_UBYTE th = 0, h = 0, t = 0, u = 0, aux_h = 0, aux_t = 0;
@@ -253,8 +210,7 @@ void LIFOS_pkg_encode(T_UBYTE did, T_UBYTE rsp, T_UBYTE ack, int value_to_send){
 	LIFOS_tx_pkg[7] = LIFOS_tx_pkg_chk;
 	LIFOS_tx_pkg[8] = ASCII_NULL;
 	
-	LIFOS_Serial->write(LIFOS_tx_pkg);	
+	LIFOS_Port->write(LIFOS_tx_pkg);	
 	
-	LIFOS_busy = FALSE;								//Release Slave	
-	
+	LIFOS_busy = FALSE;								//Release Slave		
 }

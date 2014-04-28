@@ -11,8 +11,8 @@ int lifos_printCMDList(T_UBYTE Channel, int Value)
 	/* Insert print code here */
 	for(i=0; i < LIFOS_CMD_LIST_LEN; i++)
 	{     
-		LIFOS_Serial->write((T_UBYTE *)LIFOS_CMD_LIST[i].CMD_NAME);
-		LIFOS_Serial->write("\r\n");
+		LIFOS_Port->write((T_UBYTE *)LIFOS_CMD_LIST[i].CMD_NAME);
+		LIFOS_Port->write("\r\n");
 	}
 	return 0;
 }
@@ -100,17 +100,20 @@ int lifos_pwmEnable(T_UBYTE Channel, int Value)
 	PWM.enable(Channel);
 	return 0;
 }
+
 int lifos_pwmDisable(T_UBYTE Channel, int Value)
 {
 	(void) Value;
 	PWM.disable(Channel);
 	return 0;
 }
+
 int lifos_pwmRead(T_UBYTE Channel, int Value)
 {
 	(void) Value;
 	return PWM.readDutyCycle(Channel);
 }
+
 int lifos_pwmWrite(T_UBYTE Channel, int Value)
 {
 	PWM.dutyCycle(Channel, Value);

@@ -12,8 +12,8 @@
 
 	#define LIFOS_PKG_SIZE 		8u
 
-	#define LIFOS_RX_DID		0x23		//DID - Device Receive Identifier  (35 - #)
-	#define LIFOS_TX_DID		0x40		//DID - Device Receive Identifier  (35 - #)
+	#define LIFOS_RX_DID		0x23		//DID - Device Receive Identifier  (0x35 ~ #)
+	#define LIFOS_TX_DID		0x40		//DID - Device Receive Identifier  (0x40 ~ @)
 
 	#define ERROR_SLV_BUSY 		0x41
 	#define ERROR_WRNG_DID 		0x42
@@ -28,7 +28,7 @@
 	** LIFOS type definitions
 	** ===================================================================
 	*/
-		
+
 	typedef struct{
 		T_UBYTE	DID;		//DID - Device Identifier
 		T_UBYTE CMD;		//FC  - Function Code
@@ -47,7 +47,8 @@
     */
 
 	PUBLIC_FCT void LIFOS(S_SCISTR * userSerialPort, T_ULONG br);
-	PUBLIC_FCT void LIFOS_eventListener(void);
+	PUBLIC_FCT void LIFOS_ISR_Listener(void);
+	PUBLIC_FCT void LIFOS_POL_Listener(void);
 	PRIVATE_FCT void LIFOS_pkg_decode(T_UBYTE package[]);
 	PRIVATE_FCT void LIFOS_pkg_encode(T_UBYTE did, T_UBYTE rsp, T_UBYTE ack, int value_to_send);
 	

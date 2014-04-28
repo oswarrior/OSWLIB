@@ -16,8 +16,8 @@
 	
 	typedef struct{
 		const T_UBYTE CMD;					//CMD - Command
-		const E_LIFOS_CMD_TYPE TYPE;
-		int (*FNC)(T_UBYTE, int);		//Function Handler
+		const E_LIFOS_CMD_TYPE TYPE;		//Function Type
+		int (*FNC)(T_UBYTE, int);			//Function Handler
 		const T_UBYTE * CMD_NAME;			//CMD Name
 	}S_LIFOS_CMD;
 	

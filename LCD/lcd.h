@@ -83,11 +83,13 @@
 
 		void (*customChar)(T_UBYTE location, T_UBYTE *ptr);
 		void (*command)(T_UBYTE cmd);
-		void (*printChar)(T_UBYTE data);	
-		void (*print)(char *str);	
-		void (*printNum)(int number);	
-		void (*printDigits)(int number, int digits);
-		void (*printFloat)(T_FLOAT, int);
+		
+		void (*write)(char *str);	
+		void (*writeChar)(T_UBYTE data);	
+		
+		void (*print)(T_SLONG number);	
+		void (*printDigits)(T_SLONG number, int digits);
+		void (*printFloat)(T_FLOAT number, int decimals);
 		
 		void (*setCursor)(int col, int row);
 		
@@ -108,31 +110,34 @@
 
 	PUBLIC_FCT void _OSWarrior_lcd_init(T_UBYTE cols, T_UBYTE rows, T_UBYTE RS, T_UBYTE EN, T_UBYTE d4, T_UBYTE d5, T_UBYTE d6, T_UBYTE d7);
 	PUBLIC_FCT void _OSWarrior_lcd_reset(void);
-	PUBLIC_FCT void _OSWarrior_lcd_cmd(T_UBYTE cmd);
 	PUBLIC_FCT void _OSWarrior_lcd_push_enable(void);
 	PUBLIC_FCT void _OSWarrior_lcd_clear(void);
 	PUBLIC_FCT void _OSWarrior_lcd_clear_row(int);
 	
-	PUBLIC_FCT void _OSWarrior_lcd_print (T_UBYTE *str);
-	PUBLIC_FCT void _OSWarrior_lcd_print_char (T_UBYTE data);
-	PUBLIC_FCT void _OSWarrior_lcd_print_num (int number);
-	PUBLIC_FCT void _OSWarrior_lcd_print_digits (int number, int digits_to_display);
-	PUBLIC_FCT void _OSWarrior_lcd_print_float (T_FLOAT number, int num_decimals);
-
 	PUBLIC_FCT void _OSWarrior_lcd_build(T_UBYTE location, T_UBYTE *ptr);
+	PUBLIC_FCT void _OSWarrior_lcd_cmd(T_UBYTE cmd);
+
+	PUBLIC_FCT void _OSWarrior_lcd_write (T_UBYTE *str);
+	PUBLIC_FCT void _OSWarrior_lcd_write_char (T_UBYTE data);
+	
+	PUBLIC_FCT void _OSWarrior_lcd_print (T_SLONG number);
+	PUBLIC_FCT void _OSWarrior_lcd_print_digits (T_SLONG number, int digits);
+	PUBLIC_FCT void _OSWarrior_lcd_print_float (T_FLOAT number, int decimals);
+
 	PUBLIC_FCT void _OSWarrior_lcd_setCursor(int col, int row);
 	PUBLIC_FCT void _OSWarrior_lcd_moveCursorRight(void);
 	PUBLIC_FCT void _OSWarrior_lcd_moveCursorLeft(void);
-	PUBLIC_FCT void _OSWarrior_lcd_blink(int enable);
+	
 	PUBLIC_FCT void _OSWarrior_lcd_display(int enable);
 	PUBLIC_FCT void _OSWarrior_lcd_cursor(int enable);
+	PUBLIC_FCT void _OSWarrior_lcd_blink(int enable);
 
 	PUBLIC_FCT void _OSWarrior_lcd_scrollLeft(void);
 	PUBLIC_FCT void _OSWarrior_lcd_scrollRight(void);
 
 	/*
 	** ===================================================================
-	** LCD Structure Definition
+	** LCD Structure Declaration
 	** ===================================================================
 	*/
 

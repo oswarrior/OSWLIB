@@ -1,28 +1,3 @@
-/* =============================================================================
-** 					OSWarrior - EMBEDDED SYSTEMS SOFTWARE            	  	  
-** =============================================================================
-**                       	OBJECT SPECIFICATION                                
-** =============================================================================
-**  Filename: 	 lcd.h
-** 	Description: OSWarrior library for Liquid Crystal Displays (LCD)
-** =============================================================================
-**  Author:		 Hugo Arganda (hugo.arganda@gmail.com)
-** =============================================================================
-**  							 LICENSE:
-** =============================================================================
-**  This library is free software; you can redistribute it and/or
-**  modify it under the terms of the Attribution-ShareAlike
-**  License as published by the Creative Commons Organization; either
-**  version 3.0 of the License, or (at your option) any later version.
-**  This library is distributed in the hope that it will be useful,
-**  but WITHOUT ANY WARRANTY; without even the implied warranty of
-**  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
-**  See the Attribution-ShareAlike License for more details.
-**  You should have received a copy of the Creative Commons Attribution-ShareAlike 
-**  License along with this library; if not send a email to the library author.
-** =============================================================================
-*/
-
 /*
 ** ===================================================================
 ** LCD includes
@@ -36,7 +11,7 @@ PRIVATE_DATA T_UBYTE LCD_DISPLAY = 0x0F;
 
 /*
 ** ===================================================================
-** LCD Structure definition
+	** LCD Structure Definition
 ** ===================================================================
 */
 
@@ -58,9 +33,11 @@ S_LCDSTR LCD = {
 	
 	_OSWarrior_lcd_build,
 	_OSWarrior_lcd_cmd, 
-	_OSWarrior_lcd_print_char, 
+	
+	_OSWarrior_lcd_write, 
+	_OSWarrior_lcd_write_char, 
+	
 	_OSWarrior_lcd_print, 
-	_OSWarrior_lcd_print_num, 
 	_OSWarrior_lcd_print_digits, 
 	_OSWarrior_lcd_print_float, 
 	
@@ -74,26 +51,10 @@ S_LCDSTR LCD = {
 	_OSWarrior_lcd_scrollRight, 
 };
 
+
 /*
 ** ===================================================================
-**     Function : LCD.init
-**     Handler  : _OSWarrior_lcd_init
-**
-**     Description :
-**         	This function initialize the specified pins to work as the
-**         	LCD control signals. 
-**     
-**     Parameters  : 
-**         	cols   : Specify the number of columns in the LCD 
-**         	rows   : Specify the number of columns in the LCD
-**         	RS     : Register select pin
-**         	EN     : Enable pin
-**         	d4     : Data pin 0 (Connected to D4 pin in the LCD)
-**         	d5     : Data pin 1 (Connected to D5 pin in the LCD)
-**         	d6     : Data pin 2	(Connected to D6 pin in the LCD)
-**         	d7     : Data pin 3	(Connected to D7 pin in the LCD)
-**     
-**     Returns     : Nothing
+** LCD functions definition
 ** ===================================================================
 */
 
@@ -125,21 +86,8 @@ void _OSWarrior_lcd_init(T_UBYTE rows, T_UBYTE cols, T_UBYTE RS, T_UBYTE EN, T_U
 	LCD.command(0x06);       	// Automatic Increment - No Display shift.
 	LCD.command(0x80);       	// Address DDRAM with 0 offset 80h.	
 
-
 	LCD.command(LCD_DISPLAY);	// Display default configurations, Display ON, Cursor ON and Blink ON.	
 }
-
-/*
-** ===================================================================
-**     Function : _OSWarrior_lcd_push_enable
-**
-**     Description :
-**         	This function just push the enable signal on the LCD. 
-**     
-**     Parameters  : Nothing
-**     Returns     : Nothing
-** ===================================================================
-*/
 
 void _OSWarrior_lcd_push_enable(void)
 {
@@ -148,19 +96,6 @@ void _OSWarrior_lcd_push_enable(void)
 	digitalWrite(LCD.en, LOW);
 }
 
-/*
-** ===================================================================
-**     Function : LCD.reset
-**     Handler  : _OSWarrior_lcd_reset
-**
-**     Description :
-**         	This function reset the LCD Display. 
-**     
-**     Parameters  : Nothing
-**     Returns     : Nothing
-** ===================================================================
-*/
-	
 void _OSWarrior_lcd_reset(void)
 {
 	writeNibble( 0x0F , LCD.d7, LCD.d6, LCD.d5, LCD.d4 );
@@ -190,21 +125,6 @@ void _OSWarrior_lcd_reset(void)
 	LCD.command(0x02);
 	
 }
-
-/*
-** ===================================================================
-**     Function : LCD.command
-**     Handler  : _OSWarrior_lcd_cmd
-**
-**     Description :
-**         	This function executes a command on the LCD display. 
-**     
-**     Parameters  : 
-**         	cmd    : command code to be executed 
-**     
-**     Returns     : Nothing
-** ===================================================================
-*/
 	
 void _OSWarrior_lcd_cmd (T_UBYTE cmd)
 {
@@ -219,23 +139,7 @@ void _OSWarrior_lcd_cmd (T_UBYTE cmd)
 	delay(1);
 }	
 
-/*
-** ===================================================================
-**     Function : LCD.printChar
-**     Handler  : _OSWarrior_lcd_print_char
-**
-**     Description :
-**         	This function prints a single character in the LCD where
-**         	is the cursor. 
-**     
-**     Parameters  : 
-**         	data   : ASCII value to be printed
-**     
-**     Returns     : Nothing
-** ===================================================================
-*/
-	
-void _OSWarrior_lcd_print_char(T_UBYTE data)
+void _OSWarrior_lcd_write_char(T_UBYTE data)
 {
 	//if(!data) return;
 	writeNibble( (data >> 4), LCD.d7, LCD.d6, LCD.d5, LCD.d4 );		//Write higher nibble
@@ -246,120 +150,30 @@ void _OSWarrior_lcd_print_char(T_UBYTE data)
 	delay(1);		
 }
 
-/*
-** ===================================================================
-**     Function : LCD.print
-**     Handler  : _OSWarrior_lcd_print
-**
-**     Description :
-**         	This function prints a character array to the LCD Display. 
-**     
-**     Parameters  : 
-**         	str    : character array to be printed
-**     
-**     Returns     : Nothing
-** ===================================================================
-*/
-
-void _OSWarrior_lcd_print(T_UBYTE *str)
+void _OSWarrior_lcd_write(T_UBYTE *str)
 {
 	while (*str)
 	{
-		_OSWarrior_lcd_print_char(*str);
+		_OSWarrior_lcd_write_char(*str);
 		str++;
 	}
 }
-
-/*
-** ===================================================================
-**     Function : LCD.printNum
-**     Handler  : _OSWarrior_lcd_print_num
-**
-**     Description :
-**         	This function prints a number in the LCD Display.
-**     
-**     Parameters  : 
-**         	number : number to send
-**     
-**     Returns     : Nothing
-** ===================================================================
-*/
 	
-void _OSWarrior_lcd_print_num (int number)
+void _OSWarrior_lcd_print (T_SLONG number)
 {
-	number_explode( number, _OSWarrior_lcd_print_char, 0);
+	number_explode( number, _OSWarrior_lcd_write_char, 0);
 }
-
-/*
-** ===================================================================
-**     Function : LCD.printDigits
-**     Handler  : _OSWarrior_lcd_print_digits
-**
-**     Description :
-**         	This function prints a number in the LCD Display
-**         	where the quantity of digits to display can be configured 
-**         	by the user. 
-**         	
-**         	Example: for the number 75 and 3 digits this function 
-**         	will print 075. 
-**     
-**     Parameters  : 
-**         	number : number to send
-**         	digits : the number of digits to be displayed
-**     
-**     Returns     : Nothing
-** ===================================================================
-*/
 	
-void _OSWarrior_lcd_print_digits (int number, int digits)
+void _OSWarrior_lcd_print_digits (T_SLONG number, int digits)
 {
-	number_explode( number, _OSWarrior_lcd_print_char, digits);
+	number_explode( number, _OSWarrior_lcd_write_char, digits);
 }
-
-/*
-** ===================================================================
-**     Function : LCD.printDigits
-**     Handler  : _OSWarrior_lcd_print_digits
-**
-**     Description :
-**         	This function prints a number in the LCD Display
-**         	where the quantity of digits to display can be configured 
-**         	by the user. 
-**         	
-**         	Example: for the number 75 and 3 digits this function 
-**         	will print 075. 
-**     
-**     Parameters  : 
-**         	number : number to send
-**         	digits : the number of digits to be displayed
-**     
-**     Returns     : Nothing
-** ===================================================================
-*/
 	
 void _OSWarrior_lcd_print_float (T_FLOAT number, int num_decimals)
 {
-	number_explode_FloatNumbers( number, _OSWarrior_lcd_print_char, num_decimals);
+	number_explode_FloatNumbers( number, _OSWarrior_lcd_write_char, num_decimals);
 }
 
-/*
-** ===================================================================
-**     Function : LCD.customChar
-**     Handler  : _OSWarrior_lcd_build
-**
-**     Description :
-**         	This function is able to create a custom character in the
-**         	LCD Display DRAM memory. 
-**     
-**     Parameters  : 
-**         	location  : sets the DRAM memory address to store 
-**         				the custom character 
-**         	ptr    	  : custom character data array 
-**     
-**     Returns     : Nothing
-** ===================================================================
-*/
-	
 void _OSWarrior_lcd_build(T_UBYTE location, T_UBYTE *ptr)
 {
 	/*		
@@ -368,93 +182,32 @@ void _OSWarrior_lcd_build(T_UBYTE location, T_UBYTE *ptr)
 	register T_UBYTE i;
 	if(location<8){
 		LCD.command(0x40+(location*8));
-		for(i=0;i<8;i++) _OSWarrior_lcd_print_char( ptr[ i ] );
+		for(i=0;i<8;i++) _OSWarrior_lcd_write_char( ptr[ i ] );
 	}
 }
 
-/*
-** ===================================================================
-**     Function : LCD.setCursor
-**     Handler  : _OSWarrior_lcd_setCursor
-**
-**     Description :
-**         	This function locates the LCD Display cursor to the
-**         	specified location defined by the user. 
-**     
-**     Parameters  : 
-**         	col    : column to locate the cursor (x-axis)
-**         	row    : row to locate the cursor (y-axis)
-**     
-**     Returns     : Nothing
-** ===================================================================
-*/
-	
 void _OSWarrior_lcd_setCursor (int col, int row) 
 {
 	//Position the LCD cursor; that is, set the location at which 
 	//subsequent text written to the LCD will be displayed.
-	register int i = 0;
-	LCD.command(LCD_HOME);
-	//if we are on a 1-line display, set line_num to 1st line, regardless of given
-	if (row > LCD.rows) row = 0;
-	//offset 40 chars for each row requested
-	col += 40 * (int)(row);
-	//advance the cursor to the right according to position. (second line starts at position 40).
-	for (i=0; i<col; i++) 	_OSWarrior_lcd_moveCursorRight();
+		 
+	unsigned int position = 0x80; 	//0x80; offset inicial
+	if(row > LCD.rows) row = 0;		//if we are on a 1-line display, set line_num to 1st line, regardless of given
+	if(col > LCD.cols) col = 15;	
+	position += (64 * row) + col;	//Calculate the command to set cursor  
+	LCD.command((char)position);	//Set the cursor position 
 }
 
-/*
-** ===================================================================
-**     Function : _OSWarrior_lcd_moveCursorRight
-**
-**     Description :
-**         	This function moves the LCD Display cursor from his 
-**         	current position one space to the right. 
-**     
-**     Parameters  : Nothing
-**     Returns     : Nothing
-** ===================================================================
-*/
-	
 void _OSWarrior_lcd_moveCursorRight (void) 
 {
 	LCD.command(LCD_MOVE_CURSOR_R);
 }
 
-/*
-** ===================================================================
-**     Function : _OSWarrior_lcd_moveCursorLeft
-**
-**     Description :
-**         	This function moves the LCD Display cursor from his 
-**         	current position one space to the left. 
-**     
-**     Parameters  : Nothing
-**     Returns     : Nothing
-** ===================================================================
-*/
-	
 void _OSWarrior_lcd_moveCursorLeft (void) 
 {
 	LCD.command(LCD_MOVE_CURSOR_L);
 }
 
-/*
-** ===================================================================
-**     Function : LCD.display
-**     Handler  : _OSWarrior_lcd_display
-**
-**     Description :
-**         	This function control if the data is displayed or not
-**         	in the LCD Display. 
-**     
-**     Parameters  : 
-**         	enable : Enable or Disable the LCD Display
-**     
-**     Returns     : Nothing
-** ===================================================================
-*/
-	
 void _OSWarrior_lcd_display(int enable)
 {
 	if(enable)	LCD_DISPLAY |= LCD_DISPLAY_MASK;
@@ -462,22 +215,6 @@ void _OSWarrior_lcd_display(int enable)
 	LCD.command(LCD_DISPLAY);
 }
 
-/*
-** ===================================================================
-**     Function : LCD.cursor
-**     Handler  : _OSWarrior_lcd_cursor
-**
-**     Description :
-**         	This function allows the LCD Display cursor to 
-**         	be displayed. 
-**     
-**     Parameters  : 
-**         	enable : Enable or Disable the cursor display
-**     
-**     Returns     : Nothing
-** ===================================================================
-*/
-	
 void _OSWarrior_lcd_cursor(int enable)
 {
 	if(enable)	LCD_DISPLAY |= LCD_CURSOR_MASK;
@@ -485,40 +222,12 @@ void _OSWarrior_lcd_cursor(int enable)
 	LCD.command(LCD_DISPLAY);
 }
 
-/*
-** ===================================================================
-**     Function : LCD.blink
-**     Handler  : _OSWarrior_lcd_blink
-**
-**     Description :
-**         	This function allows the LCD Display cursor to blink. 
-**     
-**     Parameters  : 
-**         	enable : Enable or Disable the cursor blinking
-**     
-**     Returns     : Nothing
-** ===================================================================
-*/
-	
 void _OSWarrior_lcd_blink(int enable)
 {
 	if(enable)	LCD_DISPLAY |= LCD_BLINK_MASK;
 	else		LCD_DISPLAY = (T_UBYTE)(LCD_DISPLAY & ~LCD_BLINK_MASK);
 	LCD.command(LCD_DISPLAY);
 }
-
-/*
-** ===================================================================
-**     Function : LCD.clear
-**     Handler  : _OSWarrior_lcd_clear
-**
-**     Description :
-**         	This function clears all data in the LCD display. 
-**     
-**     Parameters  : Nothing
-**     Returns     : Nothing
-** ===================================================================
-*/
 	
 void _OSWarrior_lcd_clear(void)
 {
@@ -526,19 +235,6 @@ void _OSWarrior_lcd_clear(void)
 	LCD.command(LCD_HOME);
 }
 
-/*
-** ===================================================================
-**     Function : LCD.clear
-**     Handler  : _OSWarrior_lcd_clear
-**
-**     Description :
-**         	This function clears all data in the LCD display. 
-**     
-**     Parameters  : Nothing
-**     Returns     : Nothing
-** ===================================================================
-*/
-	
 void _OSWarrior_lcd_scrollRight(void)
 {
 	LCD.command(LCD_SCROLL_R);
@@ -549,25 +245,10 @@ void _OSWarrior_lcd_scrollLeft(void)
 	LCD.command(LCD_SCROLL_L);
 }
 
-/*
-** ===================================================================
-**     Function : LCD.clearRow
-**     Handler  : _OSWarrior_lcd_clear_row
-**
-**     Description :
-**         	This function clears all data in the LCD display. 
-**     
-**     Parameters  : 
-**             row : row to be cleared.
-**             
-**     Returns     : Nothing
-** ===================================================================
-*/
-	
 void _OSWarrior_lcd_clear_row(int row)
 {
 	register int i = 0;
 	_OSWarrior_lcd_setCursor(0,row);
 	for(i=0;i<LCD.cols;i++)
-		_OSWarrior_lcd_print_char(0x20);	//Prints blank space
+		_OSWarrior_lcd_write_char(0x20);	//Prints blank space
 }

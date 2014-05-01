@@ -1,41 +1,7 @@
-/* =============================================================================
-** 					OSWarrior - EMBEDDED SYSTEMS SOFTWARE            	  	  
-** =============================================================================
-**                       	OBJECT SPECIFICATION                                
-** =============================================================================
-**  Filename: 	 oswarrior_mini.h
-** 	Description: OSWarrior Mini pin-out definition
-** =============================================================================
-**  Author:		 Hugo Arganda (hugo.arganda@gmail.com)
-**  Version:	 4.0
-**  Status: 	 Integrated
-** =============================================================================
-**  							CHANGE LOG:
-** =============================================================================
-**	Date: 27/03/2013 - Version 2.0 freeze
-**	Date: 28/03/2012 - PWM status and control registers bug fixed
-**	Date: 24/06/2013 - Pin-out updated
-**	Date: 14/08/2013 - Fixed wrong pin mapping on digital pins 8 to 11
-** =============================================================================
-**  							 LICENSE:
-** =============================================================================
-**  This library is free software; you can redistribute it and/or
-**  modify it under the terms of the Attribution-ShareAlike
-**  License as published by the Creative Commons Organization; either
-**  version 3.0 of the License, or (at your option) any later version.
-**  This library is distributed in the hope that it will be useful,
-**  but WITHOUT ANY WARRANTY; without even the implied warranty of
-**  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
-**  See the Attribution-ShareAlike License for more details.
-**  You should have received a copy of the Creative Commons Attribution-ShareAlike 
-**  License along with this library; if not send a email to the library author.
-** =============================================================================
-*/
-
 /***
  	 	
  	 	***************************************************************************
- 	 	************************** 	  OSWARRIOR MINI	***************************
+ 	 	************************** 	   OSWARRIOR DK		***************************
  	 	************************** 	  PINOUT DIAGRAM	***************************
  	 	***************************************************************************
 
@@ -72,9 +38,9 @@
 
 #ifdef __OSWarrior_DK__ 
 
-#ifndef OSWARRIOR_MINI_PINOUT_H_
+#ifndef OSWARRIOR_DK_HAL_H_
 	
-	#define OSWARRIOR_MINI_PINOUT_H_
+	#define OSWARRIOR_DK_HAL_H_
 
 	/*
 	** ===================================================================
@@ -86,27 +52,26 @@
 
 	/*
 	** ===================================================================
-	** OSWarrior Mini constant values
+	** OSWarrior DK constant values
 	** ===================================================================
 	*/
 	
 	#define DEVICE_ID          	0x4D3031		//M01
+	
+	#define BUSCLOCK			20000000	// 20MHz - Bus Frequency
+	
+	#define DELAY_PS			16			// Prescaler for Delay Timer Module
+
 	#define MAX_DIGITAL_PINS	24
 	#define MAX_ANALOG_PINS 	8
 	#define MAX_ONBOARD_LEDS 	1
 	#define MAX_PWM_CHANNELS 	8
 	#define MAX_KBI_CHANNELS	4
-	#define MAX_BUSFREQ			20000000	// 20MHz - Max Bus Frequency
-	#define BUSCLOCK			20000000	// 20MHz - Bus Frequency
-	//#define BUSCLOCK			15000000	// 4MHz - Bus Frequency
-	//#define BUSCLOCK			4320000		// 4.32MHz - Bus Frequency
-	#define BUSSPEED			40000000	// 40MHz - Bus Speed
+
 
 	/*
 	** ===================================================================
-	** ===================================================================
 	** Digital pin macro definitions
-	** ===================================================================
 	** ===================================================================
 	*/
 	
@@ -466,33 +431,6 @@
 
 	/*
 	** ===================================================================
-	** Delay1 Configuration Registers
-	** ===================================================================
-	*/
-	
-	#define OSWARRIOR_ENABLE_DELAYS	{ TPM3SC = 0x00u; TPM3MOD = BUSCLOCK / 8000; (void)TPM3SC; TPM3SC = 0x4BU; }
-	
-	/*
-	T_UWORD divider = 0x01;
-	
-	//Freq = BUSCLOCK / Divider
-	//Freq = 4MHz / 4096
-	//Freq = 976.56 Hz
-	//Period = 1.024 mS
-			
-	SRTISC = 0x50;			//Using the external clock doesn't works
-	SRTISC |= divider;
-	*/
-	
-	#define OSWARRIOR_DISABLE_DELAYS	\
-			TPM3SC = 0x00U;
-				
-	#define OSWARRIOR_TICK_ACK			\
-			(void)TPM3SC;				\
-			TPM3SC_TOF = 0;
-	
-	/*
-	** ===================================================================
 	** Keyboard Interruption (KBI)
 	** ===================================================================
 	** KBI port bits 3 through 0 can detect:
@@ -649,6 +587,9 @@
 	#define OSWarrior_ISR_I2CPort_Vector		0xFFCE
 
 	#define OSWarrior_ISR_TPM3Ovf_Vector		0xFFC6
+	#define OSWarrior_ISR_TPM3C1_Vector			0xFFC8
+	#define OSWarrior_ISR_TPM3C0_Vector			0xFFCA
+	
 	#define OSWarrior_ISR_RTI_Vector			0xFFCC
 
 #endif /* MINI_PINOUT_H_ */

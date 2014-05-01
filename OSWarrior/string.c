@@ -18,6 +18,7 @@
 
 #include "oswlib/settings.h"
 #include "oswlib/OSWarrior/string.h"
+#include <string.h>
 
 PRIVATE_DATA const T_UBYTE hex_digits[] =  {"0123456789ABCDEF"};
 

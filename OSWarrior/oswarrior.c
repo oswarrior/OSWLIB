@@ -114,6 +114,7 @@ void main(void)
 ** ===================================================================
 */
 
-void _OSWarrior_Dummy_Fnc(void){
+void _OSWarrior_Dummy_Fnc(void)
+{
 	return;
 }
